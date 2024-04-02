@@ -1,0 +1,79 @@
+# CULTURES:
+aboriginal_australian: {'nyoongah', 'gamilaraay', 'yura', 'palawa', 'gunwinyguan', 'kulin', 'aboriginal', 'paman'}
+african: {'bantu', 'takama', 'madagasque', 'swahili', 'bena'}
+altaic: {'mongol', 'uyghur', 'khazak', 'khalkha', 'uzbehk', 'kirgiz', 'oirats', 'chahar', 'turkmeni'}
+andean_group: {'diaguita', 'chimuan', 'aimara', 'inca'}
+apachean: {'apache', 'lipan', 'navajo', 'mescalero'}
+araucanian: {'huarpe', 'mapuche', 'patagonian', 'het'}
+aridoamerican: {'otomi', 'tepic', 'guamares', 'tecos', 'chichimecan', 'yaqui'}
+baltic: {'latvian', 'lithuanian', 'estonian'}
+british: {'welsh', 'cornish', 'english', 'american', 'scottish'}
+burman: {'kachin', 'burmese', 'chin', 'karen', 'arakanese'}
+byzantine: {'pontic_greek', 'goths', 'greek'}
+caddoan: {'pawnee', 'wichita', 'caddo'}
+carpathian: {'slovak', 'transylvanian', 'romanian', 'hungarian'}
+carribean: {'guajiro', 'maipurean', 'carib', 'arawak'}
+caucasian: {'armenian', 'dagestani', 'georgian', 'circassian'}
+central_algonquian: {'mesquakie', 'innu', 'miami', 'cree', 'shawnee', 'algonquin', 'anishinabe', 'illini'}
+central_american: {'totonac', 'purepecha', 'matlatzinca', 'aztek'}
+central_indic: {'jharkhandi', 'gondi', 'garjati'}
+chibchan: {'muisca', 'cara', 'miskito'}
+cushitic: {'tigray', 'somali', 'amhara', 'harari', 'afar', 'oromo', 'sidamo'}
+dravidian: {'tamil', 'kannada', 'malayalam', 'telegu'}
+east_asian: {'wu', 'sichuanese', 'jin', 'xiang', 'manchu_new', 'chihan', 'chimin', 'vietnamese', 'hubei', 'shandong_culture', 'gan', 'zhongyuan', 'xibei', 'jianghuai', 'hakka', 'cantonese'}
+east_slavic: {'karelian', 'novgorodian', 'byelorussian', 'ruthenian', 'russian', 'ryazanian'}
+eastern_algonquian: {'mikmaq', 'massachusset', 'powhatan', 'delaware', 'abenaki', 'mahican', 'pequot', 'maliseet'}
+eastern_aryan: {'nepali', 'bihari', 'sinhala', 'kochi', 'assamese', 'bengali', 'pahari', 'oriya'}
+eskaleut: {'aleutian', 'inuit'}
+evenks: {'yakut', 'tungus', 'manchu', 'buryat', 'yukagyr', 'evenk'}
+finno_ugric: {'samoyed', 'ostyaki', 'uralic', 'ingrian'}
+french: {'gascon', 'normand', 'cosmopolitan_french', 'breton', 'aquitaine', 'occitain', 'burgundian', 'wallonian'}
+gaelic: {'irish', 'highland_scottish'}
+germanic: {'hannoverian', 'swabian', 'flemish', 'frisian', 'franconian', 'pommeranian', 'dutch', 'bavarian', 'austrian', 'hessian', 'saxon', 'prussian', 'lower_saxon', 'swiss'}
+great_lakes_group: {'ganda', 'rwandan', 'masaba'}
+hindusthani: {'kashmiri', 'vindhyan', 'avadhi', 'panjabi', 'kanauji'}
+iberian: {'brazilian', 'basque', 'andalucian', 'leonese', 'catalan', 'portugese', 'galician', 'aragonese', 'mexican', 'castillian'}
+iranian: {'persian', 'luri', 'baluchi', 'afghani', 'kurdish', 'khorasani', 'azerbaijani', 'mazandarani'}
+iroquoian: {'tionontate', 'huron', 'susquehannock', 'laurentian', 'cherokee', 'iroquois'}
+japanese_g: {'japanese', 'togoku', 'kyushuan'}
+je: {'charruan', 'ge'}
+je_tupi: {'tupinamba', 'guarani'}
+kamchatkan_g: {'ainu', 'kamchatkan'}
+kongo_group: {'kongolese', 'yaka', 'sawabantu', 'mbangala', 'lunda', 'chokwe', 'luba', 'kuba', 'mbundu', 'jukun'}
+korean_g: {'korean'}
+latin: {'ligurian', 'umbrian', 'sicilian', 'maltese', 'romagnan', 'lombard', 'dalmatian', 'tuscan', 'neapolitan', 'venetian', 'sardinian', 'piedmontese'}
+maghrebi: {'berber', 'moroccan', 'algerian', 'tunisian'}
+malay: {'filipino', 'sulawesi', 'sundanese', 'malayan', 'nusa_tenggara', 'javanese', 'acehnese', 'sumatran', 'bornean', 'madagascan', 'moluccan', 'cham'}
+mande: {'bambara', 'soninke', 'mali', 'bozo', 'dyola', 'songhai'}
+maranon: {'jivaro', 'chachapoyan'}
+mataco: {'chacoan'}
+maya: {'wastek', 'lacandon', 'chontales', 'putun', 'mayan', 'highland_mayan', 'yucatec'}
+muskogean: {'chickasaw', 'catawba', 'natchez', 'yamasee', 'choctaw', 'creek', 'yoron', 'yuchi'}
+na_dene: {'athabascan', 'haida', 'chipewyan'}
+otomanguean: {'tlapanec', 'mixtec', 'zapotek'}
+pacific: {'polynesian', 'maori', 'melanesian', 'papuan'}
+penutian: {'chinook', 'yokuts', 'salish'}
+plains_algonquian: {'cheyenne', 'arapaho', 'plains_cree', 'blackfoot', 'bungi'}
+sahelian: {'senegambian', 'bilala', 'fulani', 'tuareg', 'kanuri', 'hausa'}
+scandinavian: {'swedish', 'sapmi', 'norwegian', 'icelandic', 'danish', 'finnish'}
+siouan: {'dakota', 'chiwere', 'nakota', 'osage'}
+sonoran: {'pueblo', 'shoshone', 'kiowa', 'piman'}
+south_slavic: {'bosnian', 'slovene', 'bulgarian', 'albanian', 'serbian', 'croatian'}
+southeastasian_group: {'mon', 'khmer'}
+southern_african: {'nyasa', 'bemba', 'khoisan', 'makua', 'nguni', 'shona'}
+sudanese: {'beja', 'nubian', 'acholi'}
+tartar: {'astrakhani', 'bashkir', 'kazani', 'nogaybak', 'crimean', 'mishary', 'siberian'}
+thai_group: {'central_thai', 'shan', 'zhuang', 'lao', 'northern_thai'}
+tibetan_group: {'miao', 'yi', 'tibetan', 'bai'}
+turko_semitic: {'al_suryah_arabic', 'turkish', 'mahri_culture', 'yemeni_culture', 'gulf_arabic', 'bedouin_arabic', 'al_misr_arabic', 'omani_culture', 'hejazi_culture', 'al_iraqiya_arabic'}
+west_african: {'fon', 'mossi', 'yorumba', 'aka', 'nupe', 'dagomba'}
+west_slavic: {'czech', 'schlesian', 'polish', 'sorbian'}
+western_aryan: {'saurashtri', 'rajput', 'malvi', 'marathi', 'gujarati', 'sindhi', 'parsi'}
+# RELIGIONS:
+christian: {'coptic', 'catholic', 'orthodox', 'hussite'}
+dharmic: {'sikhism', 'hinduism'}
+eastern: {'confucianism', 'shinto', 'vajrayana', 'buddhism', 'mahayana'}
+jewish_group: {'jewish'}
+muslim: {'sunni', 'shiite', 'ibadi'}
+pagan: {'shamanism', 'inti', 'animism', 'nahuatl', 'norse_pagan_reformed', 'tengri_pagan_reformed', 'mesoamerican_religion', 'totemism', 'dreamtime'}
+zoroastrian_group: {'zoroastrian'}
