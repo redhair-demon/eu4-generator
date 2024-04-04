@@ -185,14 +185,14 @@ def sort_closest(prov: dict, all_provs: dict, sorting = None, cyl=False):
     if sorting == None: sorting = all_provs.keys()
     return sorted(sorting, key=lambda p: distance(prov['xy'], all_provs[p]['xy'], cyl=cyl) )# (prov['xy'][0] - all_provs[p]['xy'][0])**2 + (prov['xy'][1] - all_provs[p]['xy'][1])**2)
 
-def group_by_xy(provs: dict, limit_size: list = [3, 10], limit_dist: int = 150, typ: str = "area"):
+def group_by_xy(provs: dict, limit_size: list = [3, 10], limit_dist: int = 150, typ: str = "area", cyl = False):
     areas = {}
     print(f"Generating {typ}s from {len(provs)} items...")
     names = gn.generate_names(len(provs))
     for i, l in enumerate(provs):
         name = f"{names[i]}_{typ}"
         if provs[l]['par'] == None:
-            cl = sort_closest(provs[l], provs)
+            cl = sort_closest(provs[l], provs, cyl=cyl)
             for p in filter(lambda a: a!=l, cl):
                 if provs[p]['par'] == None:
                     if distance(provs[p]['xy'], provs[l]['xy']) <= (limit_dist)**2:
@@ -234,21 +234,21 @@ def gen_areas(provinces: dict, path: str, cultures: dict, religions: dict, techs
         temp[i]['par'] = None
     lands, wastes, seas, lakes = split_lwsl(temp)
     land_areas = group_by_xy(lands, [3, 8])
-    sea_areas = group_by_xy(seas, [5, 12])
+    sea_areas = group_by_xy(seas, [5, 12], 500)
 
     with open(f'{path}/map/area.txt', 'w') as file:
         print_areas(file, land_areas, provinces, "Land areas")
         print_areas(file, sea_areas, provinces, "Sea areas")
 
     land_regions = group_by_xy(land_areas, [4, 6], 400, "region")
-    sea_regions = group_by_xy(sea_areas, [4, 8], 700, "sea_region")
+    sea_regions = group_by_xy(sea_areas, [4, 8], 900, "sea_region")
 
     with open(f'{path}/map/region.txt', 'w') as file:
         print_regions(file, land_regions, "Land regions")
         print_regions(file, sea_regions, "Sea regions")
 
     land_sr = group_by_xy(land_regions, [4, 8], 1000, "superregion")
-    sea_sr = group_by_xy(sea_regions, [6, 10], 1000, "sea_superregion")
+    sea_sr = group_by_xy(sea_regions, [3, 5], 2000, "sea_superregion", cyl=True)
 
     with open(f'{path}/map/superregion.txt', 'w') as file:
         print_sr(file, land_sr, "Land superregions")

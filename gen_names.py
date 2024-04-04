@@ -14,7 +14,7 @@ def generate_names(n):
                 file_word.append(line)
     # print(len(file_word))
     result = set()
-    for _ in range((n/len(file_word)).__ceil__()):
+    while len(result) < n:
         result.update(gener(file_word, min(n, len(file_word))))
     return list(result)[:n]
 
