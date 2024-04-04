@@ -1,7 +1,9 @@
 import csv
+import random
 import re
 import region_gen as rg
 from PIL import Image
+import os
 
 def rgb(pixel): return f"{pixel[0]}-{pixel[1]}-{pixel[2]}"
 
@@ -50,15 +52,18 @@ def read_neighbors(file_path):
             mat = re.search(regexp, line)
             rgb, id, r, g, b, name, adj_str, top, down, left, right, x, y = mat.group(1), mat.group(2), mat.group(3), mat.group(4), mat.group(5), mat.group(6), mat.group(7), mat.group(8), mat.group(9), mat.group(10), mat.group(11), mat.group(12), mat.group(13)
             adj = set(adj_str.replace("'", "").split(", "))
-            result[rgb] = {'province': id, 'red': r, 'green': g, 'blue': b, 'name': name, 'adj': adj, 'tdlr': [int(top), int(down), int(left), int(right)], 'xy': [int(x), int(y)]}
+            result[rgb] = {'province': id, 'red': r, 'green': g, 'blue': b, 'type': name, 'adj': adj, 'tdlr': [int(top), int(down), int(left), int(right)], 'xy': [int(x), int(y)]}
     return result
             
-
+def write_neighbors(file_path):
+    with open(file_path, 'w') as file:
+        for i in neighbors:
+            file.write(f"{i}: {neighbors[i]}\n")
 
 def create_files_from_csv(file_path):
     provinces = {}
     with open(file_path, 'r') as file:
-        reader = csv.DictReader(file, delimiter=";", fieldnames=['province', 'red', 'green', 'blue', 'name', 'x'],)
+        reader = csv.DictReader(file, delimiter=";", fieldnames=['province', 'red', 'green', 'blue', 'type', 'x'],)
         next(reader, None)
         for row in reader:
             row['adj'] = set()
@@ -99,18 +104,21 @@ def read_dict(path, prim_pop, inner_pop):
 # provinces = create_files_from_csv('../mods/mod1/RandomMap/map/definition.csv')
 # print(provinces.keys())
 # print(provinces['7-111-132'])
-# # Пример использования
+
 # image_path = '../mods/mod1/RandomMap/map/provinces.bmp'
 # neighbors = find_neighbors(image_path, provinces)
-# with open('adj2.txt', 'w') as file:
-#     for i in neighbors:
-#         file.write(f"{i}: {neighbors[i]}\n")
+
 
 
 neighbors = read_neighbors("adj2.txt")
 # path = '../mods/mod1/RandomMap'
 path = 'C:/Users/naego/OneDrive/Документы/Paradox Interactive/Europa Universalis IV/mod/RandomMap'
-
+pp = f"{path}/history/provinces"
+if os.path.exists(pp):
+    for file in os.listdir(pp):
+        os.remove(f"{pp}/{file}")
+    # os.rmdir(f"{path}/history/provinces")
+else: os.mkdir(pp)
 
 cultures = read_dict(f"{path}/common/cultures/00_cultures.txt", ['lost_cultures_group'], ['graphical_culture', 'male_names', 'female_names', 'dynasty_names'])
 religions = read_dict(f"{path}/common/religions/00_religion.txt", [], ['flag_emblem_index_range', 'reformed', 'anglican', 'protestant', 'religious_schools'])
@@ -121,10 +129,35 @@ religions = read_dict(f"{path}/common/religions/00_religion.txt", [], ['flag_emb
 #     file.write("# RELIGIONS:\n")
 #     for i in sorted(religions.keys()):
 #         file.write(f"{i}: {religions[i]}\n")
-# techs = read_dict(f"{path}/common/technology.txt", ['tables'], [])
-# print(techs)
-
-areas = rg.gen_areas(neighbors, path, cultures, religions)
+techs = read_dict(f"{path}/common/technology.txt", ['tables'], [])
+for i, t in enumerate(sorted(list(techs['groups']))):
+    with open(f"{path}/history/countries/R{i:02d} - {t}_country.txt", 'w') as country_file:
+        country_file.write(f"technology_group = {t}\ngovernment = republic\nreligion = orthodox\nprimary_culture = russian\ncapital = {i+1}")
+    with open(f"{path}/common/countries/{t}_country.txt", 'w') as country_file:
+        country_file.write(f"""graphical_culture = westerngfx
+random_nation_chance = 0
+color = {{ {random.randint(0, 255)} {random.randint(0, 255)} {random.randint(0, 255)} }}
+historical_idea_groups = {{	
+	administrative_ideas
+	quantity_ideas
+	defensive_ideas	
+	humanist_ideas
+	trade_ideas
+	quality_ideas
+	economic_ideas	
+	maritime_ideas
+}}
+monarch_names = {{
+    \"Olga #0\"
+}}
+leader_names = {{
+    Tropik Tropinin
+}}""")
+with open(f"{path}/common/country_tags/01_countries.txt", 'w') as country_file:
+    for i, t in enumerate(sorted(list(techs['groups']))):
+        country_file.write(f"R{i:02d} = \"countries/{t}_country.txt\"\n")
+# techs['groups'].add('empty')
+areas = rg.gen_areas(neighbors, path, cultures, religions, sorted(list(techs['groups'])), 42)
 
 print("done")
 
