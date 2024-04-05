@@ -37,4 +37,4 @@ def gener(file_word, n):
                 base_word[i] = base_word[i][:r] + random.choices(vow.replace(base_word[i][r], ""), temp)[0] + base_word[i][r+1:]
                 # base_word[i] = base_word[i][:r] + random.choices(typ(base_word[i][r]).replace(base_word[i][r], ""), ) + base_word[i][r+1:]
         # print(base_word[i])
-    return [x.capitalize()[:11] for x in base_word]
+    return [x[:11] for x in base_word]

@@ -5,30 +5,43 @@ import region_gen as rg
 from PIL import Image
 import os
 
+mod = """name="{}"
+replace_path="history/advisors"
+replace_path="history/provinces"
+replace_path="history/diplomacy"
+replace_path="history/wars"
+replace_path="history/countries"
+replace_path="decisions"
+replace_path="events"
+replace_path="missions"
+replace_path="common/bookmarks"
+replace_path="common/province_names"
+replace_path="localisation/mod_edt_loc_l_english.yml"
+replace_path="localisation/prov_names_l_english.yml"
+tags={{
+	"map"
+}}
+picture="nameofapicture.png"
+supported_version="1.30.*"
+path="mod/{}"
+"""
+
 def rgb(pixel): return f"{pixel[0]}-{pixel[1]}-{pixel[2]}"
 
 def find_neighbors(image_path, provinces):
     img = Image.open(image_path)
     width, height = img.size
-    
+    print(f"Proceeding {image_path}:")
     temp = img.getpixel((0,0))
     for i in range(1, width * height-1):
         pixel = img.getpixel((i % width, i // width))
-        tdlr = provinces[rgb(pixel)]['tdlr']
-        if tdlr[0] == None or tdlr[0] < i // width:
-            provinces[rgb(pixel)]['tdlr'][0] = i // width
-        if tdlr[1] == None or tdlr[1] > i // width:
-            provinces[rgb(pixel)]['tdlr'][1] = i // width
-        if tdlr[2] == None or tdlr[2] < i % width:
-            provinces[rgb(pixel)]['tdlr'][2] = i % width
-        if tdlr[3] == None or tdlr[3] > i % width:
-            provinces[rgb(pixel)]['tdlr'][3] = i % width
+        provinces[rgb(pixel)]['pixels'].append([i % width, i // width])
         
         if (pixel != temp):
             provinces[rgb(pixel)]['adj'].add(rgb(temp))
             provinces[rgb(temp)]['adj'].add(rgb(pixel))
         temp = pixel
-        if (i % 1000000 == 0): print(i)
+        if (i % (width*height//10) == 0): print(f"{(i*100 / (width*height)).__ceil__()}%")
     
     for i in range(width):
         temp = img.getpixel((i,0))
@@ -40,25 +53,35 @@ def find_neighbors(image_path, provinces):
             temp = pixel
 
     for i in provinces:
-        provinces[i]['xy'] = [sum(provinces[i]['tdlr'][:2])//2, sum(provinces[i]['tdlr'][2:])//2]
+        provinces[i]['xy'] = center(provinces[i]['pixels']) # [sum(provinces[i]['tdlr'][:2])//2, sum(provinces[i]['tdlr'][2:])//2]
 
     return provinces
 
+def center(pixels: list):
+    x = sum([i[0] for i in pixels]) // len(pixels)
+    y = sum([i[1] for i in pixels]) // len(pixels)
+    return [x, y]
+
 def read_neighbors(file_path):
-    regexp = r"(\d+-\d+-\d+): {'province': '(\d+)', 'red': '(\d+)', 'green': '(\d+)', 'blue': '(\d+)', 'name': '([^'\r]+)', 'x': 'x', 'adj': {((?:'\d+-\d+-\d+'(?:, )?)+)}, 'tdlr': \[(\d+), (\d+), (\d+), (\d+)\], 'xy': \[(\d+), (\d+)\]}"
+    # regexp = r"(\d+-\d+-\d+): {'province': '(\d+)', 'red': '(\d+)', 'green': '(\d+)', 'blue': '(\d+)', 'name': '([^'\r]+)', 'x': 'x', 'adj': {((?:'\d+-\d+-\d+'(?:, )?)+)}, 'tdlr': \[(\d+), (\d+), (\d+), (\d+)\], 'xy': \[(\d+), (\d+)\]}"
+    regexp = r"(\d+-\d+-\d+): {'province': '(\d+)', 'red': '(\d+)', 'green': '(\d+)', 'blue': '(\d+)', 'type': '([^'\r]+)', 'adj': {((?:'\d+-\d+-\d+'(?:, )?)+)}, 'xy': \[(\d+), (\d+)\]}"
     result = {}
     with open(file_path, 'r') as file:
         for line in file:
             mat = re.search(regexp, line)
-            rgb, id, r, g, b, name, adj_str, top, down, left, right, x, y = mat.group(1), mat.group(2), mat.group(3), mat.group(4), mat.group(5), mat.group(6), mat.group(7), mat.group(8), mat.group(9), mat.group(10), mat.group(11), mat.group(12), mat.group(13)
+            rgb, id, r, g, b, name, adj_str, x, y = mat.group(1), mat.group(2), mat.group(3), mat.group(4), mat.group(5), mat.group(6), mat.group(7), mat.group(8), mat.group(9)
             adj = set(adj_str.replace("'", "").split(", "))
-            result[rgb] = {'province': id, 'red': r, 'green': g, 'blue': b, 'type': name, 'adj': adj, 'tdlr': [int(top), int(down), int(left), int(right)], 'xy': [int(x), int(y)]}
+            # result[rgb] = {'province': id, 'red': r, 'green': g, 'blue': b, 'type': name, 'adj': adj, 'tdlr': [int(top), int(down), int(left), int(right)], 'xy': [int(x), int(y)]}
+            result[rgb] = {'province': id, 'red': r, 'green': g, 'blue': b, 'type': name, 'adj': adj, 'xy': [int(x), int(y)]}
     return result
             
-def write_neighbors(file_path):
+def write_neighbors(file_path, neighbors, skip = ['x', 'pixels']):
     with open(file_path, 'w') as file:
-        for i in neighbors:
-            file.write(f"{i}: {neighbors[i]}\n")
+        nn = neighbors.copy()
+        for i in nn:
+            for k in skip:
+                if k in nn[i]: nn[i].pop(k)
+            file.write(f"{i}: {nn[i]}\n")
 
 def create_files_from_csv(file_path):
     provinces = {}
@@ -67,7 +90,7 @@ def create_files_from_csv(file_path):
         next(reader, None)
         for row in reader:
             row['adj'] = set()
-            row['tdlr'] = [None, None, None, None]
+            row['pixels'] = []
             provinces.update({f"{row['red']}-{row['green']}-{row['blue']}": row})
             # id = row['province']
             # name = row['name']
@@ -100,64 +123,64 @@ def read_dict(path, prim_pop, inner_pop):
         dictionary[c].difference_update(inner_pop)
     return dictionary
 
-
-# provinces = create_files_from_csv('../mods/mod1/RandomMap/map/definition.csv')
-# print(provinces.keys())
-# print(provinces['7-111-132'])
-
-# image_path = '../mods/mod1/RandomMap/map/provinces.bmp'
-# neighbors = find_neighbors(image_path, provinces)
+def gen_adj(path):
+    provinces = create_files_from_csv(f'{path}/map/definition.csv')
+    image_path = f'{path}/map/provinces.bmp'
+    neighbors = find_neighbors(image_path, provinces)
+    write_neighbors(f'{path}/adj.txt', neighbors)
 
 
+if __name__ == '__main__':
+    path_mod = 'C:/Users/naego/OneDrive/Документы/Paradox Interactive/Europa Universalis IV/mod'
+    mod_name = "RandomMap"
+    path = f"{path_mod}/{mod_name}"
 
-neighbors = read_neighbors("adj2.txt")
-# path = '../mods/mod1/RandomMap'
-path = 'C:/Users/naego/OneDrive/Документы/Paradox Interactive/Europa Universalis IV/mod/RandomMap'
-pp = f"{path}/history/provinces"
-if os.path.exists(pp):
-    for file in os.listdir(pp):
-        os.remove(f"{pp}/{file}")
-    # os.rmdir(f"{path}/history/provinces")
-else: os.mkdir(pp)
+    if not os.path.exists(f"{path}/adj.txt"):
+        gen_adj(path)
+    neighbors = read_neighbors(f"{path}/adj.txt")
 
-cultures = read_dict(f"{path}/common/cultures/00_cultures.txt", ['lost_cultures_group'], ['graphical_culture', 'male_names', 'female_names', 'dynasty_names'])
-religions = read_dict(f"{path}/common/religions/00_religion.txt", [], ['flag_emblem_index_range', 'reformed', 'anglican', 'protestant', 'religious_schools'])
-# with open('cul-reg.txt', 'w') as file:
-#     file.write("# CULTURES:\n")
-#     for i in sorted(cultures.keys()):
-#         file.write(f"{i}: {cultures[i]}\n")
-#     file.write("# RELIGIONS:\n")
-#     for i in sorted(religions.keys()):
-#         file.write(f"{i}: {religions[i]}\n")
-techs = read_dict(f"{path}/common/technology.txt", ['tables'], [])
-for i, t in enumerate(sorted(list(techs['groups']))):
-    with open(f"{path}/history/countries/R{i:02d} - {t}_country.txt", 'w') as country_file:
-        country_file.write(f"technology_group = {t}\ngovernment = republic\nreligion = orthodox\nprimary_culture = russian\ncapital = {i+1}")
-    with open(f"{path}/common/countries/{t}_country.txt", 'w') as country_file:
-        country_file.write(f"""graphical_culture = westerngfx
-random_nation_chance = 0
-color = {{ {random.randint(0, 255)} {random.randint(0, 255)} {random.randint(0, 255)} }}
-historical_idea_groups = {{	
-	administrative_ideas
-	quantity_ideas
-	defensive_ideas	
-	humanist_ideas
-	trade_ideas
-	quality_ideas
-	economic_ideas	
-	maritime_ideas
-}}
-monarch_names = {{
-    \"Olga #0\"
-}}
-leader_names = {{
-    Tropik Tropinin
-}}""")
-with open(f"{path}/common/country_tags/01_countries.txt", 'w') as country_file:
+    
+    pp = f"{path}/history/provinces"
+    if os.path.exists(pp):
+        for file in os.listdir(pp):
+            os.remove(f"{pp}/{file}")
+    else: os.mkdir(pp)
+
+    cultures = read_dict(f"{path}/common/cultures/00_cultures.txt", ['lost_cultures_group'], ['graphical_culture', 'male_names', 'female_names', 'dynasty_names'])
+    religions = read_dict(f"{path}/common/religions/00_religion.txt", [], ['flag_emblem_index_range', 'reformed', 'anglican', 'protestant', 'religious_schools'])
+
+    techs = read_dict(f"{path}/common/technology.txt", ['tables'], [])
     for i, t in enumerate(sorted(list(techs['groups']))):
-        country_file.write(f"R{i:02d} = \"countries/{t}_country.txt\"\n")
-# techs['groups'].add('empty')
-areas = rg.gen_areas(neighbors, path, cultures, religions, sorted(list(techs['groups'])), 42)
+        with open(f"{path}/history/countries/R{i:02d} - {t}_country.txt", 'w') as country_file:
+            country_file.write(f"technology_group = {t}\ngovernment = republic\nreligion = orthodox\nprimary_culture = russian\ncapital = {i+1}")
+        with open(f"{path}/common/countries/{t}_country.txt", 'w') as country_file:
+            country_file.write(f"""graphical_culture = westerngfx
+    random_nation_chance = 0
+    color = {{ {random.randint(0, 255)} {random.randint(0, 255)} {random.randint(0, 255)} }}
+    historical_idea_groups = {{	
+        administrative_ideas
+        quantity_ideas
+        defensive_ideas	
+        humanist_ideas
+        trade_ideas
+        quality_ideas
+        economic_ideas	
+        maritime_ideas
+    }}
+    monarch_names = {{
+        \"Olga #0\"
+    }}
+    leader_names = {{
+        Tropik Tropinin
+    }}""")
+    with open(f"{path}/common/country_tags/01_countries.txt", 'w') as country_file:
+        for i, t in enumerate(sorted(list(techs['groups']))):
+            country_file.write(f"R{i:02d} = \"countries/{t}_country.txt\"\n")
+    
+    areas = rg.gen_areas(neighbors, path, cultures, religions, sorted(list(techs['groups'])), 42)
 
-print("done")
+    with open(f"{path_mod}/{mod_name}.mod", 'w') as mod_file:
+        mod_file.write(mod.format(mod_name, mod_name))
+
+    print("Done")
 
