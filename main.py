@@ -4,25 +4,21 @@ import re
 import region_gen as rg
 from PIL import Image
 import os
+import yaml
 
 mod = """name="{}"
-replace_path="history/advisors"
 replace_path="history/provinces"
 replace_path="history/diplomacy"
 replace_path="history/wars"
 replace_path="history/countries"
-replace_path="decisions"
-replace_path="events"
-replace_path="missions"
+#replace_path="missions"
 replace_path="common/bookmarks"
 replace_path="common/province_names"
-replace_path="localisation/mod_edt_loc_l_english.yml"
-replace_path="localisation/prov_names_l_english.yml"
 tags={{
 	"map"
 }}
 picture="nameofapicture.png"
-supported_version="1.30.*"
+supported_version="1.35.*"
 path="mod/{}"
 """
 
@@ -131,8 +127,11 @@ def gen_adj(path):
 
 
 if __name__ == '__main__':
-    path_mod = 'C:/Users/naego/OneDrive/Документы/Paradox Interactive/Europa Universalis IV/mod'
-    mod_name = "RandomMap"
+    config = yaml.safe_load(open("config.yml", encoding='utf-8'))
+    game_folder = config['game_folder']
+    path_mod = config['mod_folder']
+    mod_name = config['mod_name']
+
     path = f"{path_mod}/{mod_name}"
 
     if not os.path.exists(f"{path}/adj.txt"):
@@ -146,10 +145,21 @@ if __name__ == '__main__':
             os.remove(f"{pp}/{file}")
     else: os.mkdir(pp)
 
-    cultures = read_dict(f"{path}/common/cultures/00_cultures.txt", ['lost_cultures_group'], ['graphical_culture', 'male_names', 'female_names', 'dynasty_names'])
-    religions = read_dict(f"{path}/common/religions/00_religion.txt", [], ['flag_emblem_index_range', 'reformed', 'anglican', 'protestant', 'religious_schools'])
+    if os.path.exists(f"{path}/common/cultures/00_cultures.txt"):
+        cultures = read_dict(f"{path}/common/cultures/00_cultures.txt", ['lost_cultures_group'], ['graphical_culture', 'male_names', 'female_names', 'dynasty_names'])
+    else:
+        cultures = read_dict(f"{game_folder}/common/cultures/00_cultures.txt", ['lost_cultures_group'], ['graphical_culture', 'male_names', 'female_names', 'dynasty_names'])
+    
+    if os.path.exists(f"{path}/common/religions/00_religion.txt"):
+        religions = read_dict(f"{path}/common/religions/00_religion.txt", [], ['flag_emblem_index_range', 'reformed', 'anglican', 'protestant', 'religious_schools'])
+    else:
+        religions = read_dict(f"{game_folder}/common/religions/00_religion.txt", [], ['flag_emblem_index_range', 'reformed', 'anglican', 'protestant', 'religious_schools'])
 
-    techs = read_dict(f"{path}/common/technology.txt", ['tables'], [])
+    if os.path.exists(f"{path}/common/technology.txt"):
+        techs = read_dict(f"{path}/common/technology.txt", ['tables'], [])
+    else:
+        techs = read_dict(f"{game_folder}/common/technology.txt", ['tables'], [])
+
     for i, t in enumerate(sorted(list(techs['groups']))):
         with open(f"{path}/history/countries/R{i:02d} - {t}_country.txt", 'w') as country_file:
             country_file.write(f"technology_group = {t}\ngovernment = republic\nreligion = orthodox\nprimary_culture = russian\ncapital = {i+1}")

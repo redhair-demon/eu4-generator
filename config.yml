@@ -1,0 +1,6 @@
+# Path to folder with game
+game_folder: "D:/steam/steamapps/common/Europa Universalis IV"
+# Path to folder 'mod' in Documents
+mod_folder: "C:/Users/naego/OneDrive/Документы/Paradox Interactive/Europa Universalis IV/mod"
+# Name of mod with pre-generated map files (folder must be in 'mod_folder')
+mod_name: "Witha"
