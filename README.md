@@ -4,7 +4,7 @@
 ## How to use
 0. Pre-generate all files in `{mod name}/map` folder until `area.txt`
 1. In `config.yml` place your paths to EU4 game folder, EU4 mod folder and mod name
-2. Run `main.py`
+2. Run `main.py` (at first launch on map it will generate `adj.txt`)
 3. When it`s Done run EU4 with your mod selected
 4. Choose Single Player
 5. Create your Custom Nation
@@ -18,6 +18,8 @@
 
 **After this EU4 should generate Random Nations all over the map named after their province/area/region name**
 
+![image](https://github.com/redhair-demon/eu4-generator/assets/90033866/24fbb940-3b94-45a0-b087-d9eccbd677f3)
+
 
 ## Generator uses following files from mod directory:
 - `provinces.bmp` (currently needs to be default EU4 size: 5632 * 2048)
@@ -29,7 +31,7 @@
 - `common/technology.txt`
 
 ## Generator creates following files in mod directory:
-- `adj.txt` - Service file, includes information about all provinces parced from `provinces.bmp` and `definition.csv`, generates once.
+- `adj.txt` - Service file, includes information about all provinces parced from `provinces.bmp` and `definition.csv`, generates once per map. For next launches on map script would use this file instead of parsing bitmap
 - `map/`
   - `area.txt`, `region.txt`, `superregion.txt`, `continent.txt` -
 Define separation of map for areas, regions, superregions and continents, respectively.
@@ -45,3 +47,9 @@ Used to distribute technologies on map.
 - `localisation/random_map_mod_loc_l_english.yml` - Localisation file, incudes *normalized* names of all objects (provinces, areas, regions, etc.).
 ### Outside mod directory: 
 - `{mod name}.mod` - Mod descriptor.
+
+## Known issues
+- For some Custom Nation configs (religion, prime culture and technology group, as I found) EU4 can`t create Generic Missions, nation would be without any missions. So, when you start game, firstly check missions tree, if it is empty - try to choose different place or re-generate files
+- Some decisions also often can`t work
+- There are provinces with natives, that you can colonize, but there are no Colonial Regions (yet, I hope)
+- There are no HRE and other structures that "hard-coded" in EU4 (because it would be pretty hard to add these sctructures in random generation)
