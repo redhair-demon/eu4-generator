@@ -1,6 +1,8 @@
 # EU4 Game Files Generator
 ### This python project generates files for playing EU4 with [Random Setup](https://eu4.paradoxwikis.com/Options#:~:text=are%20disabled.-,Random%20Setup,-The%20map%20will) Dynamic Nations from _pre-generated_ [`map`](https://eu4.paradoxwikis.com/Map_modding).
 
+Was tested with [Haftetavenscrap`s EU4 Random Map Generator](https://forum.paradoxplaza.com/forum/threads/eu4-random-map-generator-revival-tech-alpha.1073599/), let me know if it works with others
+
 ## How to use
 0. Pre-generate all files in `{mod name}/map` folder until `area.txt`
 1. In `config.yml` place your paths to EU4 game folder, EU4 mod folder and mod name
