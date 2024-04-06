@@ -28,7 +28,7 @@ def set_lakes(provinces: dict, loc):
             provinces[p]['type'] = provinces[p]['type'].replace("SEA_ZONE", "LAKE")
         provinces[p]['name'] = names[i]
         with open(loc, 'a', encoding='utf-8-sig') as file_loc:
-            file_loc.write(f" PROV{provinces[p]['province']}: \"{f_name(provinces[p]['name'])}\"\n")
+            file_loc.write(f" PROV{provinces[p]['province']}: \"{f_name(provinces[p]['name'])}\"\n PROV_ADJ{provinces[p]['province']}: \"{f_name(provinces[p]['name'])}{random.choice(['an', 'ian', 'er'])}\"\n")
     return provinces
 
 def split_lwsl(provinces: dict):
@@ -65,7 +65,6 @@ def print_sr(file, srs, loc, prefix = "Group superregions"):
 
 def split_list(input_list, n):
     res = [[] for _ in range(n)]
-    # k = len(input_list) // n
     for i, l in enumerate(input_list):
         res[i % n].append(l)
     return res
@@ -98,28 +97,31 @@ def print_continents(file, cont, srs, rs, ars, all_provs, path, prefix, cultures
                         if empty or random.choices([cont[key]['natives'], False], [9, 1])[0]: all_provs[p]['tech'] = ""
                         else: all_provs[p]['tech'] = f"\nowner = R{techs.index(srs[sr]['tech']):02d}\n"
         for x in provs:
-            if "WASTE" in all_provs[x]["type"]: continue
             with open(f"{path}/history/provinces/{all_provs[x]['province']} - {all_provs[x]['name']}.txt", 'w') as prov_file:
-                prov_file.write(prov_file_format.format(2, 2, 2, all_provs[x]['cult'], all_provs[x]['rel'], all_provs[x]['tech']))
+                if "WASTE" not in all_provs[x]["type"]:
+                    prov_file.write(prov_file_format.format(2, 2, 2, all_provs[x]['cult'], all_provs[x]['rel'], all_provs[x]['tech']))
         file.write(f'{cont[key]["name"]} = {{\n\t{" ".join([all_provs[x]["province"] for x in provs])} \n}}\n')
         with open(loc, 'a', encoding='utf-8-sig') as file_loc:
             file_loc.write(yml_name(cont[key]['name'], f_name(cont[key]['name'])))
 
-def print_trade_node(node, g: nx.DiGraph, trades, all_provs, file, loc, apg: nx.Graph):
+def print_trade_node(node, g: nx.DiGraph, trades, all_provs, file_tn, file_tc, loc, apg: nx.Graph):
     if not trades[node]['printed']:
         for pr in g.pred[node]:
             if trades[pr]['printed']: continue
-            print_trade_node(pr, g, trades, all_provs, file, loc, apg)
-        # l, _, s, _ = split_lwsl(all_provs)
-        # l.update(s)
-        # all_provs[sort_closest({'xy': center([trades[x]['mem'][0], trades[node]['mem'][0]], l)})[0]]['province']
-        # path = " ".join([all_provs[p]['province'] for p in nx.shortest_path(g, node, x, weight='weight')])
+            print_trade_node(pr, g, trades, all_provs, file_tn, file_tc, loc, apg)
         if not nx.is_connected(apg): print("error here")
+        color = [random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)]
         outgoing = "\n\t".join([f"outgoing={{\n\t\tname=\"{x}\"\n\t\tpath={{{' '.join([all_provs[p]['province'] for p in nx.shortest_path(apg, trades[node]['mem'][0], trades[x]['mem'][0], weight='weight')])}}}\n\t}}" for x in g.succ[node]])
-        file.write(f'{trades[node]["name"]} = {{\n\tlocation={trades[node]["loc"]} \n\t{outgoing} \n\tmembers={{\n\t\t{" ".join([all_provs[x]["province"] for x in trades[node]["mem"]])}\n\t}} \n}}\n')
+        file_tn.write(f'{trades[node]["name"]} = {{\n\tcolor = {{ {color[0]} {color[1]} {color[2]} }} \n\tlocation={trades[node]["loc"]} \n\t{outgoing} \n\tmembers={{\n\t\t{" ".join([all_provs[x]["province"] for x in trades[node]["mem"]])}\n\t}} \n}}\n')
+        file_tc.write(f'{trades[node]["name"]}_tc = {{\n\tcolor = {{ {color[0]} {color[1]} {color[2]} }} \n\tprovinces={{\n\t\t{" ".join([all_provs[x]["province"] for x in trades[node]["mem"]])}\n\t}} \n\tnames = {{ name = \"{trades[node]["name"].upper()}_TC_Root_Culture_GetName\" }} \n\tnames = {{ name = \"{trades[node]["name"].upper()}_TC_Trade_Company\" }} \n}}\n')
+        
+        
         trades[node]['printed'] = True
         with open(loc, 'a', encoding='utf-8-sig') as file_loc:
             file_loc.write(yml_name(trades[node]['name'], f_name(trades[node]['name']), "trade"))
+            file_loc.write(yml_name(f"{trades[node]['name']}_tc", f"{f_name(trades[node]['name'])} Charter", "trade"))
+            file_loc.write(yml_name(f"{trades[node]['name'].upper()}_TC_Root_Culture_GetName", f"[Root.GetAdjective] {f_name(trades[node]['name'])} Trade Company", "trade"))
+            file_loc.write(yml_name(f"{trades[node]['name'].upper()}_TC_Trade_Company", f"{f_name(trades[node]['name'])} Trade Company", "trade"))
 
 def connect(input_cc, g: nx.DiGraph, provs):
     sorted_cc = sorted(input_cc, key=len)
@@ -148,15 +150,13 @@ def connets(g: nx.DiGraph, provs: dict, limit_dist: int, limit_size: int):
             g.add_edge(c, n)
         if len(g[n]) + len(g.pred[n]) == 0:
             g.add_edge(cl[1], n)
-    # pos = nx.get_node_attributes(g, "xy")
-    # nx.draw_networkx(g, pos)
-    # plt.show()
+    
     while not nx.is_weakly_connected(g):
         g = connect(nx.weakly_connected_components(g), g, provs)
 
     return g
 
-def print_trades(file, trades, ars, all_provs, path, limit_dist, limit_size, loc, real_all):
+def print_trades(file_tc, file_tn, trades, ars, all_provs, path, limit_dist, limit_size, loc, real_all):
     keys = list(trades.keys())
     G = nx.DiGraph()
     for key in keys: 
@@ -187,12 +187,10 @@ def print_trades(file, trades, ars, all_provs, path, limit_dist, limit_size, loc
             if adj in apl: 
                 pt = apl[p]['type']
                 at = apl[adj]['type']
-                apg.add_edge(p, adj, weight=2 if 'SEA' in pt and 'SEA' in at else 0.5 if 'PROV' in pt and 'PROV' in at else 4 if ('SEA' in pt and 'PROV' in at) or ('SEA' in at and 'PROV' in pt) else 10000 if 'WASTE' in at or 'WASTE' in pt else 1000)
-    # print(nx.is_connected(apg), len(list(nx.connected_components(apg))))
-    # for gr in nx.connected_components(apg):
-        # gg.plot_g(apg.subgraph(gr))
+                apg.add_edge(p, adj, weight=2 if 'SEA' in pt and 'SEA' in at else 0.5 if 'PROV' in pt and 'PROV' in at else 3 if ('SEA' in pt and 'PROV' in at) or ('SEA' in at and 'PROV' in pt) else 10000 if 'WASTE' in at or 'WASTE' in pt else 1000)
+    
     for node in G:
-        print_trade_node(node, G, trades, apl, file, loc, apg)
+        print_trade_node(node, G, trades, apl, file_tn, file_tc, loc, apg)
     
 def center(prov_keys, all_provs):
     x = sum([all_provs[i]['xy'][0] for i in prov_keys])//len(prov_keys)
@@ -263,9 +261,9 @@ def yml_name(tag:str, name: str, typ: str = "area"):
         return f" {tag}: \"{name}\"\n {tag}_name: \"{name}\"\n {tag}_adj: \"{name}\"\n"
 
 def gen_areas(provinces: dict, path: str, cultures: dict, religions: dict, techs: list, seed: int = 1):
-    random.seed(seed)
+    # random.seed(seed)
     
-    areas_loc = f"{path}/localisation/mod_edt_loc_l_english.yml"
+    areas_loc = f"{path}/localisation/random_map_mod_loc_l_english.yml"
     with open(areas_loc, 'w', encoding='utf-8-sig') as file:
         file.write("l_english:\n")
 
@@ -327,8 +325,9 @@ def gen_areas(provinces: dict, path: str, cultures: dict, religions: dict, techs
     # trades = group_by_xy(temp, [6, 12], 700, "trade")
     trades = gg.group_kmean(temp, 9, "trade")
     # print(len(trades))
-    with open(f"{path}/common/tradenodes/00_tradenodes.txt", 'w') as file:
-        print_trades(file, trades, land_areas, lands, path, 500, 3, areas_loc, provinces)
+    with open(f"{path}/common/tradenodes/00_tradenodes.txt", 'w') as file_tn:
+        with open(f"{path}/common/trade_companies/00_trade_companies.txt", 'w') as file_tc:
+            print_trades(file_tc, file_tn, trades, land_areas, lands, path, 500, 3, areas_loc, provinces)
 
     return land_areas
     
