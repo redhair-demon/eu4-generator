@@ -128,6 +128,7 @@ def gen_adj(path):
 
 if __name__ == '__main__':
     config = yaml.safe_load(open("config.yml", encoding='utf-8'))
+    default_conts = yaml.safe_load(open("default_data.yml", encoding='utf-8'))
     game_folder = config['game_folder']
     path_mod = config['mod_folder']
     mod_name = config['mod_name']
@@ -186,8 +187,9 @@ if __name__ == '__main__':
     with open(f"{path}/common/country_tags/01_countries.txt", 'w') as country_file:
         for i, t in enumerate(sorted(list(techs['groups']))):
             country_file.write(f"R{i:02d} = \"countries/{t}_country.txt\"\n")
-    
-    areas = rg.gen_areas(neighbors, path, cultures, religions, sorted(list(techs['groups'])), 42)
+    # for n in list(neighbors.keys())[:2]:
+    #     print(n, neighbors[n])
+    areas = rg.gen_areas(neighbors, path, cultures, religions, sorted(list(techs['groups'])), 42, def_conts=default_conts)
 
     with open(f"{path_mod}/{mod_name}.mod", 'w') as mod_file:
         mod_file.write(mod.format(mod_name, mod_name))

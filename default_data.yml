@@ -1,0 +1,1576 @@
+europe:
+  culture_group:
+    west_slavic:
+      culture:
+        west_slavic:
+          slovak: 5
+          polish: 22
+          czech: 11
+          schlesian: 5
+          sorbian: 3
+          total: 46
+        total: 46
+      religion:
+        christian:
+          catholic: 41
+          hussite: 5
+          total: 46
+        total: 46
+      technology_group:
+        eastern: 26
+        western: 20
+        total: 46
+    germanic:
+      culture:
+        germanic:
+          saxon: 19
+          bavarian: 11
+          swiss: 10
+          dutch: 8
+          prussian: 7
+          lower_saxon: 13
+          austrian: 11
+          hessian: 16
+          hannoverian: 9
+          pommeranian: 12
+          frisian: 3
+          franconian: 8
+          flemish: 6
+          swabian: 13
+          baltic_german: 1
+          total: 147
+        total: 147
+      religion:
+        christian:
+          catholic: 147
+          total: 147
+        total: 147
+      technology_group:
+        western: 147
+        total: 147
+    byzantine:
+      culture:
+        byzantine:
+          greek: 23
+          goths: 1
+          pontic_greek: 3
+          total: 27
+        total: 27
+      religion:
+        christian:
+          orthodox: 27
+          total: 27
+        total: 27
+      technology_group:
+        ottoman: 7
+        eastern: 4
+        western: 16
+        total: 27
+    tartar:
+      culture:
+        tartar:
+          mishary: 10
+          kazani: 10
+          crimean: 11
+          bashkir: 4
+          astrakhani: 6
+          siberian: 1
+          nogaybak: 1
+          total: 43
+        total: 43
+      religion:
+        muslim:
+          sunni: 42
+          total: 42
+        pagan:
+          tengri_pagan_reformed: 1
+          total: 1
+        total: 43
+      technology_group:
+        nomad_group: 40
+        eastern: 2
+        western: 1
+        total: 43
+    east_slavic:
+      culture:
+        east_slavic:
+          ruthenian: 20
+          byelorussian: 15
+          russian: 27
+          novgorodian: 20
+          ryazanian: 13
+          total: 95
+        total: 95
+      religion:
+        christian:
+          orthodox: 95
+          total: 95
+        total: 95
+      technology_group:
+        eastern: 94
+        nomad_group: 1
+        total: 95
+    british:
+      culture:
+        british:
+          english: 25
+          scottish: 5
+          welsh: 4
+          cornish: 1
+          total: 35
+        total: 35
+      religion:
+        christian:
+          catholic: 35
+          total: 35
+        total: 35
+      technology_group:
+        western: 35
+        total: 35
+    iberian:
+      culture:
+        iberian:
+          andalucian: 12
+          aragonese: 4
+          castillian: 12
+          galician: 4
+          catalan: 12
+          portugese: 10
+          leonese: 6
+          basque: 3
+          total: 63
+        total: 63
+      religion:
+        christian:
+          catholic: 59
+          total: 59
+        muslim:
+          sunni: 4
+          total: 4
+        total: 63
+      technology_group:
+        western: 59
+        muslim: 4
+        total: 63
+    french:
+      culture:
+        french:
+          occitain: 16
+          cosmopolitan_french: 19
+          wallonian: 9
+          burgundian: 10
+          gascon: 8
+          breton: 5
+          normand: 3
+          total: 70
+        total: 70
+      religion:
+        christian:
+          catholic: 70
+          total: 70
+        total: 70
+      technology_group:
+        western: 70
+        total: 70
+    carpathian:
+      culture:
+        carpathian:
+          hungarian: 9
+          romanian: 10
+          transylvanian: 6
+          total: 25
+        total: 25
+      religion:
+        christian:
+          catholic: 12
+          orthodox: 13
+          total: 25
+        total: 25
+      technology_group:
+        eastern: 25
+        total: 25
+    latin:
+      culture:
+        latin:
+          neapolitan: 10
+          piedmontese: 4
+          sicilian: 6
+          lombard: 7
+          tuscan: 5
+          dalmatian: 4
+          sardinian: 4
+          venetian: 7
+          umbrian: 6
+          romagnan: 6
+          maltese: 1
+          ligurian: 3
+          total: 63
+        total: 63
+      religion:
+        christian:
+          catholic: 63
+          total: 63
+        total: 63
+      technology_group:
+        western: 60
+        eastern: 3
+        total: 63
+    scandinavian:
+      culture:
+        scandinavian:
+          finnish: 7
+          danish: 13
+          norwegian: 14
+          icelandic: 3
+          sapmi: 6
+          swedish: 16
+          karelian: 5
+          total: 64
+        total: 64
+      religion:
+        christian:
+          catholic: 58
+          orthodox: 6
+          total: 64
+        total: 64
+      technology_group:
+        western: 56
+        eastern: 6
+        total: 62
+    south_slavic:
+      culture:
+        south_slavic:
+          bosnian: 6
+          bulgarian: 11
+          albanian: 4
+          serbian: 10
+          croatian: 6
+          slovene: 3
+          total: 40
+        total: 40
+      religion:
+        christian:
+          catholic: 11
+          orthodox: 29
+          total: 40
+        total: 40
+      technology_group:
+        eastern: 23
+        ottoman: 12
+        western: 5
+        total: 40
+    gaelic:
+      culture:
+        gaelic:
+          irish: 13
+          highland_scottish: 7
+          total: 20
+        total: 20
+      religion:
+        christian:
+          catholic: 20
+          total: 20
+        total: 20
+      technology_group:
+        western: 20
+        total: 20
+    turko_semitic:
+      culture:
+        turko_semitic:
+          turkish: 33
+          total: 33
+        total: 33
+      religion:
+        muslim:
+          sunni: 30
+          shiite: 3
+          total: 33
+        total: 33
+      technology_group:
+        ottoman: 33
+        total: 33
+    finno_ugric:
+      culture:
+        finno_ugric:
+          uralic: 10
+          samoyed: 1
+          ostyaki: 1
+          total: 12
+        total: 12
+      religion:
+        pagan:
+          tengri_pagan_reformed: 10
+          total: 10
+        christian:
+          orthodox: 2
+          total: 2
+        total: 12
+      technology_group:
+        nomad_group: 4
+        eastern: 5
+        total: 9
+    baltic:
+      culture:
+        baltic:
+          lithuanian: 9
+          estonian: 4
+          latvian: 5
+          total: 18
+        total: 18
+      religion:
+        christian:
+          catholic: 18
+          total: 18
+        total: 18
+      technology_group:
+        eastern: 8
+        western: 10
+        total: 18
+    maghrebi:
+      culture:
+        maghrebi:
+          berber: 4
+          total: 4
+        total: 4
+      religion:
+        pagan:
+          animism: 4
+          total: 4
+        total: 4
+    caucasian:
+      culture:
+        caucasian:
+          armenian: 2
+          dagestani: 5
+          georgian: 9
+          circassian: 4
+          total: 20
+        total: 20
+      religion:
+        christian:
+          coptic: 2
+          orthodox: 13
+          total: 15
+        muslim:
+          shiite: 1
+          sunni: 4
+          total: 5
+        total: 20
+      technology_group:
+        muslim: 6
+        eastern: 13
+        nomad_group: 1
+        total: 20
+    total: 825
+asia:
+  culture_group:
+    japanese_g:
+      culture:
+        japanese_g:
+          togoku: 19
+          japanese: 17
+          kyushuan: 8
+          total: 44
+        total: 44
+      religion:
+        eastern:
+          shinto: 43
+          total: 43
+        pagan:
+          animism: 1
+          total: 1
+        total: 44
+      technology_group:
+        chinese: 44
+        total: 44
+    evenks:
+      culture:
+        evenks:
+          buryat: 13
+          evenk: 7
+          manchu: 32
+          yakut: 9
+          yukagyr: 6
+          tungus: 7
+          total: 74
+        total: 74
+      religion:
+        pagan:
+          tengri_pagan_reformed: 61
+          total: 61
+        eastern:
+          confucianism: 13
+          total: 13
+        total: 74
+      technology_group:
+        chinese: 12
+        nomad_group: 32
+        total: 44
+    western_aryan:
+      culture:
+        western_aryan:
+          marathi: 23
+          rajput: 22
+          gujarati: 8
+          sindhi: 7
+          saurashtri: 8
+          malvi: 6
+          total: 74
+        total: 74
+      religion:
+        dharmic:
+          hinduism: 66
+          total: 66
+        muslim:
+          sunni: 7
+          total: 7
+        zoroastrian_group:
+          zoroastrian: 1
+          total: 1
+        total: 74
+      technology_group:
+        indian: 74
+        total: 74
+    malay:
+      culture:
+        malay:
+          filipino: 24
+          acehnese: 5
+          javanese: 11
+          bornean: 23
+          moluccan: 9
+          nusa_tenggara: 7
+          cham: 8
+          sumatran: 22
+          sulawesi: 13
+          malayan: 15
+          sundanese: 7
+          total: 144
+        total: 144
+      religion:
+        pagan:
+          animism: 51
+          total: 51
+        muslim:
+          sunni: 37
+          total: 37
+        dharmic:
+          hinduism: 53
+          total: 53
+        eastern:
+          mahayana: 2
+          buddhism: 1
+          total: 3
+        total: 144
+      technology_group:
+        chinese: 97
+        total: 97
+    east_asian:
+      culture:
+        east_asian:
+          chimin: 7
+          xibei: 9
+          sichuanese: 7
+          jin: 8
+          shandong_culture: 6
+          zhongyuan: 9
+          hubei: 4
+          chihan: 7
+          hakka: 4
+          cantonese: 5
+          jianghuai: 7
+          gan: 3
+          wu: 8
+          xiang: 3
+          total: 87
+        total: 87
+      religion:
+        eastern:
+          confucianism: 85
+          vajrayana: 1
+          total: 86
+        pagan:
+          animism: 1
+          total: 1
+        total: 87
+      technology_group:
+        chinese: 87
+        total: 87
+    turko_semitic:
+      culture:
+        turko_semitic:
+          bedouin_arabic: 20
+          yemeni_culture: 13
+          omani_culture: 7
+          al_iraqiya_arabic: 13
+          al_suryah_arabic: 12
+          gulf_arabic: 12
+          hejazi_culture: 10
+          mahri_culture: 5
+          turkish: 1
+          total: 93
+        total: 93
+      religion:
+        muslim:
+          sunni: 58
+          ibadi: 8
+          shiite: 26
+          total: 92
+        christian:
+          coptic: 1
+          total: 1
+        total: 93
+      technology_group:
+        muslim: 92
+        ottoman: 1
+        total: 93
+    finno_ugric:
+      culture:
+        finno_ugric:
+          ostyaki: 7
+          samoyed: 7
+          total: 14
+        total: 14
+      religion:
+        pagan:
+          tengri_pagan_reformed: 11
+          total: 11
+        muslim:
+          sunni: 3
+          total: 3
+        total: 14
+      technology_group:
+        nomad_group: 4
+        total: 4
+    central_indic:
+      culture:
+        central_indic:
+          jharkhandi: 4
+          gondi: 11
+          garjati: 8
+          total: 23
+        total: 23
+      religion:
+        dharmic:
+          hinduism: 23
+          total: 23
+        total: 23
+      technology_group:
+        indian: 23
+        total: 23
+    altaic:
+      culture:
+        altaic:
+          chahar: 11
+          kirgiz: 9
+          mongol: 14
+          khalkha: 20
+          turkmeni: 6
+          khazak: 26
+          oirats: 16
+          uzbehk: 15
+          uyghur: 15
+          total: 132
+        total: 132
+      religion:
+        pagan:
+          tengri_pagan_reformed: 39
+          total: 39
+        muslim:
+          sunni: 63
+          shiite: 1
+          total: 64
+        eastern:
+          confucianism: 1
+          vajrayana: 28
+          total: 29
+        total: 132
+      technology_group:
+        nomad_group: 94
+        chinese: 15
+        muslim: 19
+        total: 128
+    tibetan_group:
+      culture:
+        tibetan_group:
+          tibetan: 24
+          yi: 4
+          miao: 3
+          bai: 5
+          total: 36
+        total: 36
+      religion:
+        eastern:
+          vajrayana: 24
+          buddhism: 5
+          total: 29
+        pagan:
+          animism: 7
+          total: 7
+        total: 36
+      technology_group:
+        chinese: 35
+        indian: 1
+        total: 36
+    caucasian:
+      culture:
+        caucasian:
+          armenian: 6
+          total: 6
+        total: 6
+      religion:
+        christian:
+          coptic: 6
+          total: 6
+        total: 6
+      technology_group:
+        muslim: 5
+        eastern: 1
+        total: 6
+    iranian:
+      culture:
+        iranian:
+          luri: 6
+          azerbaijani: 13
+          khorasani: 14
+          afghani: 12
+          persian: 20
+          kurdish: 12
+          mazandarani: 5
+          baluchi: 9
+          total: 91
+        total: 91
+      religion:
+        muslim:
+          shiite: 40
+          sunni: 50
+          total: 90
+        zoroastrian_group:
+          zoroastrian: 1
+          total: 1
+        total: 91
+      technology_group:
+        muslim: 91
+        total: 91
+    hindusthani:
+      culture:
+        hindusthani:
+          panjabi: 15
+          avadhi: 8
+          kashmiri: 4
+          vindhyan: 7
+          kanauji: 8
+          total: 42
+        total: 42
+      religion:
+        dharmic:
+          hinduism: 34
+          total: 34
+        muslim:
+          sunni: 6
+          total: 6
+        eastern:
+          vajrayana: 1
+          buddhism: 1
+          total: 2
+        total: 42
+      technology_group:
+        indian: 42
+        total: 42
+    pacific:
+      culture:
+        pacific:
+          polynesian: 3
+          total: 3
+        total: 3
+      religion:
+        pagan:
+          animism: 3
+          total: 3
+        total: 3
+    kamchatkan_g:
+      culture:
+        kamchatkan_g:
+          kamchatkan: 5
+          ainu: 5
+          nivkh: 4
+          total: 14
+        total: 14
+      religion:
+        pagan:
+          tengri_pagan_reformed: 9
+          animism: 5
+          total: 14
+        total: 14
+      technology_group:
+        chinese: 12
+        total: 12
+    eastern_aryan:
+      culture:
+        eastern_aryan:
+          bihari: 10
+          pahari: 4
+          kochi: 3
+          bengali: 17
+          oriya: 4
+          sinhala: 5
+          nepali: 10
+          assamese: 5
+          total: 58
+        total: 58
+      religion:
+        dharmic:
+          hinduism: 50
+          total: 50
+        eastern:
+          buddhism: 5
+          vajrayana: 3
+          total: 8
+        total: 58
+      technology_group:
+        indian: 58
+        total: 58
+    southeastasian_group:
+      culture:
+        southeastasian_group:
+          vietnamese: 8
+          mon: 7
+          khmer: 18
+          total: 33
+        total: 33
+      religion:
+        eastern:
+          mahayana: 8
+          buddhism: 16
+          total: 24
+        dharmic:
+          hinduism: 7
+          total: 7
+        pagan:
+          animism: 2
+          total: 2
+        total: 33
+      technology_group:
+        chinese: 33
+        total: 33
+    thai_group:
+      culture:
+        thai_group:
+          northern_thai: 5
+          shan: 12
+          lao: 14
+          central_thai: 15
+          zhuang: 5
+          total: 51
+        total: 51
+      religion:
+        eastern:
+          buddhism: 34
+          mahayana: 1
+          confucianism: 4
+          total: 39
+        pagan:
+          animism: 12
+          total: 12
+        total: 51
+      technology_group:
+        chinese: 51
+        total: 51
+    dravidian:
+      culture:
+        dravidian:
+          kannada: 16
+          malayalam: 6
+          telegu: 18
+          tamil: 15
+          total: 55
+        total: 55
+      religion:
+        dharmic:
+          hinduism: 54
+          total: 54
+        muslim:
+          sunni: 1
+          total: 1
+        total: 55
+      technology_group:
+        indian: 55
+        total: 55
+    tartar:
+      culture:
+        tartar:
+          nogaybak: 12
+          siberian: 5
+          total: 17
+        total: 17
+      religion:
+        muslim:
+          sunni: 17
+          total: 17
+        total: 17
+      technology_group:
+        nomad_group: 17
+        total: 17
+    korean_g:
+      culture:
+        korean_g:
+          korean: 18
+          total: 18
+        total: 18
+      religion:
+        eastern:
+          confucianism: 18
+          total: 18
+        total: 18
+      technology_group:
+        chinese: 18
+        total: 18
+    burman:
+      culture:
+        burman:
+          burmese: 8
+          kachin: 3
+          chin: 7
+          arakanese: 2
+          karen: 1
+          total: 21
+        total: 21
+      religion:
+        eastern:
+          buddhism: 11
+          total: 11
+        pagan:
+          animism: 6
+          total: 6
+        dharmic:
+          hinduism: 4
+          total: 4
+        total: 21
+      technology_group:
+        chinese: 16
+        indian: 5
+        total: 21
+    total: 1130
+africa:
+  culture_group:
+    southern_african:
+      culture:
+        southern_african:
+          bemba: 6
+          shona: 10
+          nyasa: 9
+          khoisan: 9
+          makua: 5
+          nguni: 12
+          total: 51
+        total: 51
+      religion:
+        pagan:
+          shamanism: 49
+          total: 49
+        muslim:
+          sunni: 2
+          total: 2
+        total: 51
+      technology_group:
+        central_african: 19
+        east_african: 2
+        total: 21
+    maghrebi:
+      culture:
+        maghrebi:
+          moroccan: 16
+          berber: 18
+          tunisian: 17
+          algerian: 8
+          total: 59
+        total: 59
+      religion:
+        muslim:
+          sunni: 55
+          ibadi: 4
+          total: 59
+        total: 59
+      technology_group:
+        muslim: 58
+        total: 58
+    cushitic:
+      culture:
+        cushitic:
+          somali: 29
+          afar: 4
+          sidamo: 7
+          amhara: 12
+          tigray: 5
+          harari: 3
+          total: 60
+        total: 60
+      religion:
+        muslim:
+          sunni: 40
+          total: 40
+        christian:
+          coptic: 14
+          total: 14
+        pagan:
+          shamanism: 4
+          total: 4
+        jewish_group:
+          jewish: 2
+          total: 2
+        total: 60
+      technology_group:
+        east_african: 58
+        total: 58
+    sahelian:
+      culture:
+        sahelian:
+          senegambian: 7
+          tuareg: 16
+          hausa: 10
+          tunjur: 5
+          kanuri: 9
+          bilala: 2
+          fulani: 5
+          total: 54
+        total: 54
+      religion:
+        pagan:
+          shamanism: 24
+          total: 24
+        muslim:
+          sunni: 30
+          total: 30
+        total: 54
+      technology_group:
+        sub_saharan: 43
+        total: 43
+    kongo_group:
+      culture:
+        kongo_group:
+          lunda: 3
+          luba: 11
+          chokwe: 2
+          kuba: 3
+          kongolese: 11
+          mbundu: 5
+          sawabantu: 3
+          mbangala: 3
+          yaka: 2
+          jukun: 3
+          total: 46
+        total: 46
+      religion:
+        pagan:
+          shamanism: 46
+          total: 46
+        total: 46
+      technology_group:
+        central_african: 36
+        total: 36
+    mande:
+      culture:
+        mande:
+          dyola: 7
+          soninke: 4
+          mali: 4
+          songhai: 7
+          bambara: 4
+          bozo: 4
+          total: 30
+        total: 30
+      religion:
+        pagan:
+          shamanism: 21
+          total: 21
+        muslim:
+          sunni: 9
+          total: 9
+        total: 30
+      technology_group:
+        sub_saharan: 27
+        total: 27
+    african:
+      culture:
+        african:
+          madagasque: 16
+          bantu: 3
+          swahili: 15
+          takama: 4
+          bena: 3
+          total: 41
+        total: 41
+      religion:
+        pagan:
+          shamanism: 28
+          total: 28
+        muslim:
+          sunni: 12
+          ibadi: 1
+          total: 13
+        total: 41
+      technology_group:
+        east_african: 28
+        central_african: 1
+        total: 29
+    west_african:
+      culture:
+        west_african:
+          yorumba: 10
+          nupe: 3
+          mossi: 6
+          aka: 7
+          fon: 2
+          dagomba: 3
+          total: 31
+        total: 31
+      religion:
+        pagan:
+          shamanism: 31
+          total: 31
+        total: 31
+      technology_group:
+        sub_saharan: 23
+        total: 23
+    sudanese:
+      culture:
+        sudanese:
+          acholi: 3
+          nubian: 15
+          beja: 4
+          total: 22
+        total: 22
+      religion:
+        pagan:
+          shamanism: 7
+          total: 7
+        muslim:
+          sunni: 9
+          shiite: 1
+          total: 10
+        christian:
+          coptic: 5
+          total: 5
+        total: 22
+      technology_group:
+        east_african: 12
+        muslim: 2
+        central_african: 1
+        total: 15
+    turko_semitic:
+      culture:
+        turko_semitic:
+          al_misr_arabic: 25
+          bedouin_arabic: 1
+          total: 26
+        total: 26
+      religion:
+        muslim:
+          sunni: 26
+          total: 26
+        total: 26
+      technology_group:
+        muslim: 26
+        total: 26
+    great_lakes_group:
+      culture:
+        great_lakes_group:
+          rwandan: 6
+          masaba: 3
+          ganda: 4
+          total: 13
+        total: 13
+      religion:
+        pagan:
+          shamanism: 13
+          total: 13
+        total: 13
+      technology_group:
+        central_african: 11
+        total: 11
+    total: 433
+north_america:
+  culture_group:
+    chibchan:
+      culture:
+        chibchan:
+          miskito: 10
+          muisca: 5
+          total: 15
+        total: 15
+      religion:
+        pagan:
+          animism: 15
+          total: 15
+        total: 15
+      technology_group:
+        mesoamerican: 1
+        total: 1
+    muskogean:
+      culture:
+        muskogean:
+          creek: 9
+          catawba: 10
+          choctaw: 6
+          natchez: 6
+          yamasee: 11
+          yoron: 5
+          chickasaw: 4
+          yuchi: 6
+          total: 57
+        total: 57
+      religion:
+        pagan:
+          totemism: 57
+          total: 57
+        total: 57
+      technology_group:
+        north_american: 20
+        total: 20
+    eastern_algonquian:
+      culture:
+        eastern_algonquian:
+          powhatan: 9
+          maliseet: 6
+          mahican: 3
+          pequot: 3
+          abenaki: 8
+          mikmaq: 9
+          massachusset: 5
+          delaware: 7
+          total: 50
+        total: 50
+      religion:
+        pagan:
+          totemism: 50
+          total: 50
+        total: 50
+      technology_group:
+        north_american: 9
+        total: 9
+    aridoamerican:
+      culture:
+        aridoamerican:
+          otomi: 3
+          tepic: 7
+          chichimecan: 11
+          tecos: 3
+          guamares: 3
+          total: 27
+        total: 27
+      religion:
+        pagan:
+          nahuatl: 13
+          animism: 14
+          total: 27
+        total: 27
+      technology_group:
+        mesoamerican: 14
+        total: 14
+    otomanguean:
+      culture:
+        otomanguean:
+          zapotek: 4
+          tlapanec: 4
+          mixtec: 4
+          total: 12
+        total: 12
+      religion:
+        pagan:
+          nahuatl: 12
+          total: 12
+        total: 12
+      technology_group:
+        mesoamerican: 12
+        total: 12
+    central_algonquian:
+      culture:
+        central_algonquian:
+          anishinabe: 12
+          innu: 11
+          mesquakie: 2
+          shawnee: 10
+          cree: 11
+          miami: 7
+          algonquin: 9
+          illini: 10
+          total: 72
+        total: 72
+      religion:
+        pagan:
+          totemism: 72
+          total: 72
+        total: 72
+      technology_group:
+        north_american: 15
+        total: 15
+    caddoan:
+      culture:
+        caddoan:
+          wichita: 11
+          caddo: 11
+          pawnee: 15
+          total: 37
+        total: 37
+      religion:
+        pagan:
+          totemism: 37
+          total: 37
+        total: 37
+      technology_group:
+        north_american: 5
+        total: 5
+    apachean:
+      culture:
+        apachean:
+          mescalero: 9
+          navajo: 2
+          apache: 4
+          lipan: 7
+          total: 22
+        total: 22
+      religion:
+        pagan:
+          totemism: 22
+          total: 22
+        total: 22
+      technology_group:
+        north_american: 4
+        total: 4
+    iroquoian:
+      culture:
+        iroquoian:
+          iroquois: 9
+          laurentian: 8
+          susquehannock: 6
+          huron: 4
+          cherokee: 2
+          tionontate: 6
+          total: 35
+        total: 35
+      religion:
+        pagan:
+          totemism: 35
+          total: 35
+        total: 35
+      technology_group:
+        north_american: 18
+        total: 18
+    carribean:
+      culture:
+        carribean:
+          arawak: 27
+          carib: 7
+          total: 34
+        total: 34
+      religion:
+        pagan:
+          animism: 33
+          totemism: 1
+          total: 34
+        total: 34
+    plains_algonquian:
+      culture:
+        plains_algonquian:
+          plains_cree: 2
+          blackfoot: 6
+          arapaho: 2
+          cheyenne: 1
+          bungi: 3
+          total: 14
+        total: 14
+      religion:
+        pagan:
+          totemism: 14
+          total: 14
+        total: 14
+      technology_group:
+        north_american: 4
+        total: 4
+    eskaleut:
+      culture:
+        eskaleut:
+          aleutian: 6
+          inuit: 5
+          total: 11
+        total: 11
+      religion:
+        pagan:
+          totemism: 11
+          total: 11
+        total: 11
+    central_american:
+      culture:
+        central_american:
+          aztek: 10
+          totonac: 3
+          purepecha: 5
+          matlatzinca: 3
+          total: 21
+        total: 21
+      religion:
+        pagan:
+          nahuatl: 21
+          total: 21
+        total: 21
+      technology_group:
+        mesoamerican: 21
+        total: 21
+    penutian:
+      culture:
+        penutian:
+          yokuts: 7
+          chinook: 10
+          salish: 8
+          total: 25
+        total: 25
+      religion:
+        pagan:
+          totemism: 25
+          total: 25
+        total: 25
+      technology_group:
+        north_american: 3
+        total: 3
+    maya:
+      culture:
+        maya:
+          yucatec: 10
+          chontales: 3
+          wastek: 3
+          highland_mayan: 6
+          lacandon: 3
+          putun: 4
+          total: 29
+        total: 29
+      religion:
+        pagan:
+          mesoamerican_religion: 28
+          totemism: 1
+          total: 29
+        total: 29
+      technology_group:
+        mesoamerican: 28
+        total: 28
+    sonoran:
+      culture:
+        sonoran:
+          piman: 20
+          shoshone: 6
+          pueblo: 6
+          kiowa: 2
+          total: 34
+        total: 34
+      religion:
+        pagan:
+          totemism: 32
+          animism: 2
+          total: 34
+        total: 34
+      technology_group:
+        north_american: 10
+        total: 10
+    na_dene:
+      culture:
+        na_dene:
+          chipewyan: 3
+          haida: 4
+          athabascan: 1
+          total: 8
+        total: 8
+      religion:
+        pagan:
+          totemism: 8
+          total: 8
+        total: 8
+      technology_group:
+        north_american: 1
+        total: 1
+    siouan:
+      culture:
+        siouan:
+          dakota: 6
+          nakota: 4
+          chiwere: 5
+          osage: 2
+          total: 17
+        total: 17
+      religion:
+        pagan:
+          totemism: 17
+          total: 17
+        total: 17
+      technology_group:
+        north_american: 6
+        total: 6
+    total: 520
+south_america:
+  culture_group:
+    araucanian:
+      culture:
+        araucanian:
+          het: 9
+          patagonian: 10
+          mapuche: 6
+          huarpe: 7
+          total: 32
+        total: 32
+      religion:
+        pagan:
+          animism: 32
+          total: 32
+        total: 32
+      technology_group:
+        south_american: 1
+        total: 1
+    andean_group:
+      culture:
+        andean_group:
+          chimuan: 5
+          aimara: 16
+          diaguita: 9
+          inca: 12
+          total: 42
+        total: 42
+      religion:
+        pagan:
+          inti: 35
+          animism: 7
+          total: 42
+        total: 42
+      technology_group:
+        andean: 31
+        total: 31
+    carribean:
+      culture:
+        carribean:
+          guajiro: 37
+          carib: 17
+          maipurean: 8
+          total: 62
+        total: 62
+      religion:
+        pagan:
+          animism: 61
+          inti: 1
+          total: 62
+        total: 62
+      technology_group:
+        south_american: 2
+        total: 2
+    je:
+      culture:
+        je:
+          ge: 37
+          charruan: 8
+          total: 45
+        total: 45
+      religion:
+        pagan:
+          animism: 45
+          total: 45
+        total: 45
+      technology_group:
+        south_american: 2
+        total: 2
+    je_tupi:
+      culture:
+        je_tupi:
+          guarani: 18
+          tupinamba: 22
+          total: 40
+        total: 40
+      religion:
+        pagan:
+          animism: 40
+          total: 40
+        total: 40
+      technology_group:
+        south_american: 4
+        total: 4
+    mataco:
+      culture:
+        mataco:
+          chacoan: 6
+          total: 6
+        total: 6
+      religion:
+        pagan:
+          animism: 6
+          total: 6
+        total: 6
+    chibchan:
+      culture:
+        chibchan:
+          muisca: 8
+          cara: 5
+          total: 13
+        total: 13
+      religion:
+        pagan:
+          inti: 9
+          animism: 4
+          total: 13
+        total: 13
+      technology_group:
+        andean: 7
+        south_american: 1
+        total: 8
+    maranon:
+      culture:
+        maranon:
+          chachapoyan: 2
+          jivaro: 5
+          total: 7
+        total: 7
+      religion:
+        pagan:
+          inti: 2
+          animism: 5
+          total: 7
+        total: 7
+      technology_group:
+        andean: 2
+        total: 2
+    total: 247
+oceania:
+  culture_group:
+    aboriginal_australian:
+      culture:
+        aboriginal_australian:
+          paman: 8
+          gunwinyguan: 4
+          gamilaraay: 8
+          aboriginal: 9
+          nyoongah: 7
+          palawa: 3
+          kulin: 4
+          yura: 3
+          total: 46
+        total: 46
+      religion:
+        pagan:
+          dreamtime: 46
+          total: 46
+        total: 46
+      technology_group:
+        aboriginal_tech: 13
+        total: 13
+    pacific:
+      culture:
+        pacific:
+          melanesian: 6
+          polynesian: 19
+          maori: 9
+          papuan: 10
+          total: 44
+        total: 44
+      religion:
+        pagan:
+          animism: 44
+          total: 44
+        total: 44
+      technology_group:
+        polynesian_tech: 16
+        total: 16
+    total: 90

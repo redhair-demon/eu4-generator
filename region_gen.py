@@ -1,6 +1,7 @@
 import random
 import networkx as nx
 import matplotlib.pyplot as plt
+import yaml
 import gen_names as gn
 import graph_gen as gg
 
@@ -71,11 +72,12 @@ def split_list(input_list, n):
 
 def print_continents(file, cont, srs, rs, ars, all_provs, path, prefix, cultures, religions, techs, loc):
     file.write(f'\n# {prefix}\n\n')
-    rel = split_list(random.sample(list(religions.keys()), len(religions)), len(cont))
-    cul = split_list(random.sample(list(cultures.keys()), len(cultures)), len(cont))
+    rel = split_list(random.sample(list(religions.keys()), counts=[len(religions[x]) for x in religions], k=sum([len(religions[x]) for x in religions])), len(cont))
+    cul = split_list(random.sample(list(cultures.keys()), counts=[len(cultures[x]) for x in cultures], k=sum([len(cultures[x]) for x in cultures])), len(cont))
     natives = [False for _ in cont]
     natives[:len(cont)//3] = [True for _ in range(len(cont)//3)]
     random.shuffle(natives)
+    # print(rel, cul, natives, sep="\n")
     for p in all_provs:
         all_provs[p]['tech'] = 'yet'
     for index, key in enumerate(cont): 
@@ -96,6 +98,94 @@ def print_continents(file, cont, srs, rs, ars, all_provs, path, prefix, cultures
                         empty = random.choice(["WASTE" in all_provs[x]["type"] or all_provs[x]['tech'] == "" for x in all_provs[p]['adj']])
                         if empty or random.choices([cont[key]['natives'], False], [9, 1])[0]: all_provs[p]['tech'] = ""
                         else: all_provs[p]['tech'] = f"\nowner = R{techs.index(srs[sr]['tech']):02d}\n"
+        for x in provs:
+            with open(f"{path}/history/provinces/{all_provs[x]['province']} - {all_provs[x]['name']}.txt", 'w') as prov_file:
+                if "WASTE" not in all_provs[x]["type"]:
+                    prov_file.write(prov_file_format.format(2, 2, 2, all_provs[x]['cult'], all_provs[x]['rel'], all_provs[x]['tech']))
+        file.write(f'{cont[key]["name"]} = {{\n\t{" ".join([all_provs[x]["province"] for x in provs])} \n}}\n')
+        with open(loc, 'a', encoding='utf-8-sig') as file_loc:
+            file_loc.write(yml_name(cont[key]['name'], f_name(cont[key]['name'])))
+
+def distrib(cults: dict, n: int):
+    res = [set() for _ in range(n)]
+    while any([len(x) == 0 for x in res]):
+        for c in cults:
+            lowest = sorted([i for i in range(n)], key=lambda b: sum(cults[cc] for cc in res[b]))[0]
+            res[lowest].add(c)
+    return res
+
+def sample(list_from, counts: list, k: int, scale = 1):
+    if counts == []: counts = [1 for _ in list_from]
+    elif scale != 1:
+        counts = [(c*scale).__ceil__() for c in counts]
+    if k <= len(list_from):
+        return random.sample(list_from, counts=counts, k=k)
+    res = sample(list_from, counts, len(list_from))
+    res.extend(sample(list_from, counts, k-len(list_from)))
+    return res
+
+def print_continents_default(file, cont, srs, rs, ars, all_provs, path, prefix, loc, techs, def_cont):
+    file.write(f'\n# {prefix}\n\n')
+    # rel = split_list(random.sample(list(religions.keys()), counts=[len(religions[x]) for x in religions], k=sum([len(religions[x]) for x in religions])), len(cont))
+    # cul = split_list(random.sample(list(cultures.keys()), counts=[len(cultures[x]) for x in cultures], k=sum([len(cultures[x]) for x in cultures])), len(cont))
+    natives = [False for _ in cont]
+    natives[:len(cont)//3] = [True for _ in range(len(cont)//3)]
+    random.shuffle(natives)
+    # print(rel, cul, natives, sep="\n")
+    for p in all_provs:
+        all_provs[p]['tech'] = 'yet'
+    for index, key in enumerate(cont): 
+        provs = set()
+        def_key = key.replace("_continent", "")
+        cont[key]['natives'] = natives[index]
+        cont_cg = {k: v['culture']['total'] for k, v in def_cont[def_key]['culture_group'].items() if k != 'total'}
+        # cont_rg = {k: v['total'] for k, v in def_cont[def_key]['culture_group']['finno_ugric']['religion'].items() if k != 'total'}
+        # cont_tg = {k: v['technology_group']['total'] for k, v in def_cont[def_key]['culture_group'].items() if k != 'total'}
+        sr_cg = distrib(cont_cg, len(cont[key]['in']))
+        # split_list(random.sample(list(cont_cg.keys()), counts=list(cont_cg.values()), k=sum(cont_cg.values())), len(cont[key]['in']))
+        # print(sr_cg)
+        cgs = gg.group_agg({p: all_provs[p] for sr in cont[key]['in'] for r in srs[sr]['in'] for a in rs[r]['in'] for p in ars[a]['in']}, 1, 'cg', all_provs, False, {str(s): 1 for s in sr_cg}, def_names=True)
+        for i, cg in enumerate(cgs):
+            cult_clusters = gg.group_agg({p: all_provs[p] for p in cgs[cg]['in']}, 1, 'culture', all_provs, False, {k: def_cont[def_key]['culture_group'][k]['culture'][k]['total'] for k in sr_cg[i]}, def_names=True)
+            for cc, v in cult_clusters.items():
+                subcults = {kk: vv for kk, vv in def_cont[def_key]['culture_group'][cc.replace("_culture", "")]['culture'][cc.replace("_culture", "")].items() if kk != 'total'}
+                print(cc, subcults, v['in'])
+                subcult_clusters = gg.group_agg({p: all_provs[p] for p in v['in']}, 1, 'subcult', all_provs, False, subcults, def_names=True)
+                for sc, vv in subcult_clusters.items():
+                    for p in vv['in']:
+                        provs.add(p)
+                        all_provs[p]['cult'] = sc.removesuffix("_subcult")
+                        all_provs[p]['rel'] = "orthodox"
+                        all_provs[p]['tech'] = ""
+                
+
+            ttt = {'cgs': cgs, 'cc': cult_clusters}
+            
+            yaml.dump(ttt, open('temp.yml', 'w'))
+
+
+
+
+        # for i, sr in enumerate(cont[key]['in']):
+        #     # print(srs[sr]['in'])
+        #     # srs[sr]['rel'] = sample(sr_cg[i], counts=[cont_rg[x] for x in sr_cg[i]], k=len(rs[r]['in']), scale=0.17)
+        #     for r in srs[sr]['in']:
+        #         rs[r]['cult'] = distrib({x: cont_cg[x] for x in sr_cg[i]}, len(rs[r]['in']))
+        #         # print(r, rs[r]['cult'])
+        #         rs[r]['rel'] = sample(sr_cg[i], counts=[cont_cg[x] for x in sr_cg[i]], k=sum([cont_cg[x] for x in sr_cg[i]]), scale=0.17)
+        #         for ai, a in enumerate(rs[r]['in']):
+        #             # print(rs[r]['cult'], ai)
+        #             chosen = random.choice(list(rs[r]['cult'][ai]))
+        #             tc = def_cont[def_key]['culture_group'][chosen]['culture'][chosen]
+        #             if 'total' in tc: tc.pop('total')
+        #             ars[a]['cult'] = random.choices(list(tc.keys()), [tc[x] for x in tc])[0]
+        #             for p in ars[a]['in']:
+        #                 provs.add(p)
+        #                 all_provs[p]['cult'] = ars[a]['cult']
+        #                 all_provs[p]['rel'] = rs[r]['rel']
+                        # empty = random.choice(["WASTE" in all_provs[x]["type"] or all_provs[x]['tech'] == "" for x in all_provs[p]['adj']])
+                        # if empty or random.choices([cont[key]['natives'], False], [9, 1])[0]: all_provs[p]['tech'] = ""
+                        # else: all_provs[p]['tech'] = f"\nowner = R{techs.index(srs[sr]['tech']):02d}\n"
         for x in provs:
             with open(f"{path}/history/provinces/{all_provs[x]['province']} - {all_provs[x]['name']}.txt", 'w') as prov_file:
                 if "WASTE" not in all_provs[x]["type"]:
@@ -260,7 +350,7 @@ def yml_name(tag:str, name: str, typ: str = "area"):
     else:
         return f" {tag}: \"{name}\"\n {tag}_name: \"{name}\"\n {tag}_adj: \"{name}\"\n"
 
-def gen_areas(provinces: dict, path: str, cultures: dict, religions: dict, techs: list, seed: int = 1):
+def gen_areas(provinces: dict, path: str, cultures: dict, religions: dict, techs: list, seed: int = 1, def_conts: dict = {}):
     # random.seed(seed)
     
     areas_loc = f"{path}/localisation/random_map_mod_loc_l_english.yml"
@@ -272,36 +362,37 @@ def gen_areas(provinces: dict, path: str, cultures: dict, religions: dict, techs
     for i in temp:
         temp[i]['par'] = None
     lands, wastes, seas, lakes = split_lwsl(temp)
-    # land_areas = group_by_xy(lands, [3, 8])
-    land_areas = gg.group_kmean(lands, 6, "area")
+    ls = lands.copy()
+    ls.update(seas)
+    land_areas, sea_areas, all_areas = gg.group_agg_both([lands, seas], 7, 'area', provinces, disp=False, is_sea=True)
+    # land_areas = gg.group_agg(lands, 7, 'area', provinces, True, path=path)
+    # sea_areas = gg.group_agg(seas, 10, 'sea_area', provinces, True, is_sea=True, path=path)
+    # land_areas = gg.group_kmean(lands, 6, "area")
     # sea_areas = group_by_xy(seas, [6, 10], 800)
-    sea_areas = gg.group_kmean(seas, 8, "sea_area")
+    # sea_areas = gg.group_kmean(seas, 8, "sea_area")
 
     with open(f'{path}/map/area.txt', 'w') as file:
         print_areas(file, land_areas, provinces, areas_loc, "Land areas")
         print_areas(file, sea_areas, provinces, areas_loc, "Sea areas")
-
-    # land_regions = group_by_xy(land_areas, [4, 6], 400, "region")
-    land_regions = gg.group_kmean(land_areas, 5, "region")
-    # sea_regions = group_by_xy(sea_areas, [4, 6], 1000, "sea_region")
-    sea_regions = gg.group_kmean(sea_areas, 5, "sea_region")
-
+    
+    land_regions, sea_regions, all_regions = gg.group_agg_both([land_areas, sea_areas], 6, 'region', all_areas, disp=False, is_sea=True)
+    # land_regions = gg.group_agg(land_areas, 7, 'region', provinces, True, path=path)
+    # sea_regions = gg.group_agg(sea_areas, 10, 'sea_region', provinces, True, is_sea=True, path=path)
     with open(f'{path}/map/region.txt', 'w') as file:
         print_regions(file, land_regions, areas_loc, "Land regions")
         print_regions(file, sea_regions, areas_loc, "Sea regions")
 
-    # land_sr = group_by_xy(land_regions, [4, 8], 1000, "superregion")
-    land_sr = gg.group_kmean(land_regions, 5, "superregion")
-    # sea_sr = group_by_xy(sea_regions, [3, 6], 1500, "sea_superregion", cyl=True)
-    sea_sr = gg.group_kmean(sea_regions, 5, "sea_superregion")
-
+    land_sr, sea_sr, all_sr = gg.group_agg_both([land_regions, sea_regions], 5, 'region', all_regions, disp=False, is_sea=True)
+    # land_sr = gg.group_agg(land_regions, 7, 'region', provinces, True, path=path)
+    # sea_sr = gg.group_agg(sea_regions, 10, 'sea_region', provinces, True, is_sea=True, path=path)
     with open(f'{path}/map/superregion.txt', 'w') as file:
         print_sr(file, land_sr, areas_loc, "Land superregions")
         print_sr(file, sea_sr, areas_loc, "Sea superregions")
-
     
-    # continents = group_by_xy(land_sr, [3, 6], 2000, "continent")
-    continents = gg.group_kmean(land_sr, 4, "continent")
+    if def_conts == {}:
+        continents = gg.group_agg(land_sr, 4, "continent", all_sr)
+    else:
+        continents = gg.group_agg(land_sr, 4, "continent", all_sr, def_conts=def_conts, def_names=True)
 
     # adding wastelands to continents begin
     waste_areas = {x: {'in': set([x]), 'par': x, 'xy': provinces[x]['xy'], 'name': f"waste_{x}"} for x in wastes}
@@ -316,14 +407,19 @@ def gen_areas(provinces: dict, path: str, cultures: dict, religions: dict, techs
     # end
 
     with open(f'{path}/map/continent.txt', 'w') as file:
-        print_continents(file, continents, lw_sr, lw_reg, lw_ar, provinces, path, "custom continents", cultures, religions, techs, areas_loc)
+        if def_conts == {}:
+            print_continents(file, continents, lw_sr, lw_reg, lw_ar, provinces, path, "custom continents", cultures, religions, techs, areas_loc)
+        else:
+            print_continents_default(file, continents, lw_sr, lw_reg, lw_ar, provinces, path, "custom continents", areas_loc, techs, def_conts)
 
-    temp = {}
+    temp, temp_all = {}, all_areas.copy()
     for l in reversed(list(land_areas.keys())):
         temp[l] = land_areas[l]
         temp[l]['par'] = None
+    for l in all_areas:
+        temp_all[l]['par'] = None
     # trades = group_by_xy(temp, [6, 12], 700, "trade")
-    trades = gg.group_kmean(temp, 9, "trade")
+    trades = gg.group_agg(temp, 9, "trade", temp_all)
     # print(len(trades))
     with open(f"{path}/common/tradenodes/00_tradenodes.txt", 'w') as file_tn:
         with open(f"{path}/common/trade_companies/00_trade_companies.txt", 'w') as file_tc:
