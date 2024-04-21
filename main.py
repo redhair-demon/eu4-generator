@@ -127,6 +127,9 @@ def gen_adj(path):
 
 
 if __name__ == '__main__':
+    print("Press Enter to start generation")
+    input()
+    print("Generating...")
     config = yaml.safe_load(open("config.yml", encoding='utf-8'))
     default_conts = yaml.safe_load(open("default_data.yml", encoding='utf-8'))
     game_folder = config['game_folder']
@@ -195,4 +198,6 @@ if __name__ == '__main__':
         mod_file.write(mod.format(mod_name, mod_name))
 
     print("Done")
+    print("Press Enter key to exit.")
+    input()
 
