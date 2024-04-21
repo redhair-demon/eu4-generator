@@ -158,6 +158,7 @@ def group_agg(subg_dict: dict, n, typ, all_provs, disp=False, def_conts={}, def_
     return groups
 
 def group_agg_w(subg_dict: dict, n, typ, all_provs, disp=False, def_conts={}, def_names=True, weights=[], is_sea=False):
+    if len(subg_dict) == 0: return {}
     subg = nx.Graph()
     subg.add_nodes_from([(k, v) for k, v in subg_dict.items()])
     print(f"Generating {typ}s from {len(subg_dict)} items...")
