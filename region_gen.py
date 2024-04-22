@@ -335,7 +335,7 @@ def gen_areas(provinces: dict, path: str, cultures: dict, religions: dict, techs
         continents, _,_ = gg.group_agg_both([land_sr], 4, "continent", all_sr, disp=False, is_sea=False)
     else:
         continents, _,_ = gg.group_agg_both([land_sr], 4, "continent", all_sr, def_conts=def_conts, def_names=True, disp=False, is_sea=False)
-    gg.plot_g(continents)
+    # gg.plot_g(continents)
 
     # adding wastelands to continents begin
     waste_areas = {x: {'in': set([x]), 'par': x, 'xy': provinces[x]['xy'], 'name': f"waste_{x}"} for x in wastes}
