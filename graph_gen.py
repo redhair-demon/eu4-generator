@@ -185,8 +185,8 @@ def group_agg_w(subg_dict: dict, n, typ, all_provs, disp=False, def_conts={}, de
             if len(def_conts) == 0:
                 names = gn.generate_names(len(coords)//n)
             else:
-                if len(subg_dict) < len(def_conts):
-                    def_conts = {k: def_conts[k] for k in random.choices(list(def_conts.keys()), weights=list(def_conts.values()),k=len(subg_dict))}
+                # if len(subg_dict) < len(def_conts):
+                #     def_conts = {k: def_conts[k] for k in random.choices(list(def_conts.keys()), weights=list(def_conts.values()),k=len(subg_dict))}
                 names = list(def_conts.keys()) if def_names else gn.generate_names(len(def_conts))
             model = AgglomerativeClustering(n_clusters=min(sum(weights), len(subg)), linkage='ward', connectivity=X).fit(list(coords.values()))
             clusters = ggs.group_weight(model, coords, nodes, weights)

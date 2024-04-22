@@ -5,15 +5,14 @@ import numpy as np
 
 def reduce_w(weights, n):
     tw = []
-    for v in weights:
-        for i, v in enumerate(weights):
-            tw.append(round((n-sum(tw))*(v/sum(weights[i:]))))
+    for i, v in enumerate(weights):
+        tw.append(round((n-sum(tw))*(v/sum(weights[i:]))))
     return tw
 
 def group_weight(model, coords, nodes, weights, disp=False):
     clusters = model.labels_
     n_clusters = model.n_clusters_
-    if sum(weights) > n_clusters: weights = reduce_w(weights, n_clusters)
+    if sum(weights) != n_clusters: weights = reduce_w(weights, n_clusters)
     tg_m = {i: {
         'xy': center([xy for k, xy in enumerate(coords.values()) if clusters[k]==i]), 
         'in': set([n for ii, n in enumerate(nodes) if clusters[ii]==i]),
