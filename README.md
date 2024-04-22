@@ -6,7 +6,7 @@ Was tested with [Haftetavenscrap`s EU4 Random Map Generator](https://forum.parad
 ## How to use
 0. Pre-generate all files in `{mod name}/map` folder until `area.txt`
 1. In `config.yml` place your paths to EU4 game folder, EU4 mod folder and mod name
-2. Run `main.py` (at first launch on map it will generate `adj.txt`)
+2. Run `main.py`/`main.exe` (depending on whether you chose release archive or source code). At first launch on map it will generate `adj.txt`
 3. When it`s Done run EU4 with your mod selected
 4. Choose Single Player
 5. Create your Custom Nation
