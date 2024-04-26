@@ -51,7 +51,9 @@ Used to distribute technologies on map.
 - `{mod name}.mod` - Mod descriptor.
 
 ## Known issues
+- For reason I don't understand sometimes `{mod name}.mod` file can be not changed, which may lead to some of probles described below
 - For some Custom Nation configs (religion, prime culture and technology group, as I found) EU4 can`t create Generic Missions, nation would be without any missions. So, when you start game, firstly check missions tree, if it is empty - try to choose different place or re-generate files
-- Some decisions also often can`t work
+- Problems with Institutions - some of them can't spawn, others are already accepted
+- Some decisions also often can`t work (for example, decision [Found Indian Trade Company](https://eu4.paradoxwikis.com/List_of_decision_lists#Indian_Trade_Company:~:text=id-,Found%20Indian%20Trade%20Company,-Our%20interest%20in) is always available and can't disapper, so AI countries every day activate it - this may be related to previous point)
 - There are provinces with natives, that you can colonize, but there are no Colonial Regions (yet, I hope)
 - There are no HRE and other structures that "hard-coded" in EU4 (because it would be pretty hard to add these sctructures in random generation)
