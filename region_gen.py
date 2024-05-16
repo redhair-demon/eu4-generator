@@ -19,6 +19,7 @@ native_ferocity = 4             # How tough the native attack will be
 native_hostileness = 3          # How likely natives are to attack
 
 {}
+{}
 """
 
 def set_lakes(provinces: dict, loc):
@@ -105,6 +106,7 @@ def print_continents(file, cont, srs, rs, ars, all_provs, path, prefix, cultures
         file.write(f'{cont[key]["name"]} = {{\n\t{" ".join([all_provs[x]["province"] for x in provs])} \n}}\n')
         with open(loc, 'a', encoding='utf-8-sig') as file_loc:
             file_loc.write(yml_name(cont[key]['name'], f_name(cont[key]['name'])))
+        cont[key]['mem'] = provs
 
 def distrib(cults: dict, n: int):
     res = [set() for _ in range(n)]
@@ -132,13 +134,14 @@ def print_continents_default(file, cont, srs, rs, ars, all_provs, path, prefix, 
 
     for p in all_provs:
         all_provs[p]['tech'] = ''
+        all_provs[p]['latent'] = ''
     for index, key in enumerate(cont): 
         provs = set()
         def_key = key.replace("_continent", "")
         cont[key]['natives'] = natives[index]
         cont_cg = {k: v['culture']['total'] for k, v in def_cont[def_key]['culture_group'].items() if k != 'total'}
         sr_cg = distrib(cont_cg, len(cont[key]['in']))
-        cgs = gg.group_agg({p: all_provs[p] for sr in cont[key]['in'] for r in srs[sr]['in'] for a in rs[r]['in'] for p in ars[a]['in']}, 1, 'cg', all_provs, False, {str(s): 1 for s in sr_cg}, def_names=True)
+        cgs = gg.group_agg({p: all_provs[p] for sr in cont[key]['in'] for r in srs[sr]['in'] for a in rs[r]['in'] for p in ars[a]['in']}, 1, 'cg', all_provs, disp=False, def_conts={str(s): 1 for s in sr_cg}, def_names=True)
         for i, cg in enumerate(cgs):
             dcc = {k: def_cont[def_key]['culture_group'][k]['culture'][k]['total'] for k in sr_cg[i]}
             cult_clusters = gg.group_agg_w({p: all_provs[p] for p in cgs[cg]['in']}, 1, 'culture', all_provs, disp=False, def_conts=dcc, weights=[v for v in dcc.values()], def_names=True)
@@ -169,40 +172,55 @@ def print_continents_default(file, cont, srs, rs, ars, all_provs, path, prefix, 
 
                 subcults = {kk: vv for kk, vv in def_cont[def_key]['culture_group'][cc_key]['culture'][cc_key].items() if kk != 'total'}
                 # print(cc, subcults, v['in'])
+                dev = {base: {k: v[str(k)] for k, v in def_cont[def_key]['culture_group'][cc_key][base].items()} for base in ['base_tax', 'base_production', 'base_manpower']}
                 subcult_clusters = gg.group_agg_w({p: all_provs[p] for p in cv['in']}, 1, 'subcult', all_provs, disp=False, def_conts=subcults, weights=[v for v in subcults.values()], def_names=True)
                 for sc, vv in subcult_clusters.items():
                     for p in vv['in']:
                         provs.add(p)
                         all_provs[p]['cult'] = sc.removesuffix("_subcult")
+                        all_provs[p]['latent'] = 'latent_trade_goods = {{coal}}' if random.random() < def_cont[def_key]['coal'] else ''
+                        for base in ['base_tax', 'base_production', 'base_manpower']:
+                            all_provs[p][base] = random.sample(list(dev[base].keys()), counts=list(dev[base].values()), k=1)[0]
+                # for base in ['base_tax', 'base_production', 'base_manpower']:
+                #     dev[base] = {k: v[str(k)] for k, v in def_cont[def_key]['culture_group'][cc_key][base].items()}
             # ttt = {'cgs': cgs, 'cc': cult_clusters}
             # yaml.dump(ttt, open('temp.yml', 'w'))
 
         for x in provs:
             with open(f"{path}/history/provinces/{all_provs[x]['province']} - {all_provs[x]['name']}.txt", 'w') as prov_file:
                 if "WASTE" not in all_provs[x]["type"]:
-                    prov_file.write(prov_file_format.format(2, 2, 2, all_provs[x]['cult'], all_provs[x]['rel'], all_provs[x]['tech']))
+                    prov_file.write(prov_file_format.format(all_provs[x]['base_tax'], all_provs[x]['base_production'], all_provs[x]['base_manpower'], all_provs[x]['cult'], all_provs[x]['rel'], all_provs[x]['tech'], all_provs[x]['latent']))
         file.write(f'{cont[key]["name"]} = {{\n\t{" ".join([all_provs[x]["province"] for x in provs])} \n}}\n')
-        with open(loc, 'a', encoding='utf-8-sig') as file_loc:
-            file_loc.write(yml_name(cont[key]['name'], f_name(cont[key]['name'])))
+        cont[key]['mem'] = provs
+        # if default then its already localized
+        # with open(loc, 'a', encoding='utf-8-sig') as file_loc:
+        #     file_loc.write(yml_name(cont[key]['name'], def_cont[def_key]['name']))
+    file.write(f'new_world = {{}}\n')
 
-def print_trade_node(node, g: nx.DiGraph, trades, all_provs, file_tn, file_tc, loc, apg: nx.Graph):
+def print_trade_node(node, g: nx.DiGraph, trades, all_provs, file_tn, file_tc, file_cr, loc, apg: nx.Graph):
     if not trades[node]['printed']:
         for pr in g.pred[node]:
             if trades[pr]['printed']: continue
-            print_trade_node(pr, g, trades, all_provs, file_tn, file_tc, loc, apg)
+            print_trade_node(pr, g, trades, all_provs, file_tn, file_tc, file_cr, loc, apg)
         if not nx.is_connected(apg): print("error here")
         color = [random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)]
         outgoing = "\n\t".join([f"outgoing={{\n\t\tname=\"{x}\"\n\t\tpath={{{' '.join([all_provs[p]['province'] for p in nx.shortest_path(apg, trades[node]['mem'][0], trades[x]['mem'][0], weight='weight')])}}}\n\t}}" for x in g.succ[node]])
         file_tn.write(f'{trades[node]["name"]} = {{\n\tcolor = {{ {color[0]} {color[1]} {color[2]} }} \n\tlocation={trades[node]["loc"]} \n\t{outgoing} \n\tmembers={{\n\t\t{" ".join([all_provs[x]["province"] for x in trades[node]["mem"]])}\n\t}} \n}}\n')
-        file_tc.write(f'{trades[node]["name"]}_tc = {{\n\tcolor = {{ {color[0]} {color[1]} {color[2]} }} \n\tprovinces={{\n\t\t{" ".join([all_provs[x]["province"] for x in trades[node]["mem"]])}\n\t}} \n\tnames = {{ name = \"{trades[node]["name"].upper()}_TC_Root_Culture_GetName\" }} \n\tnames = {{ name = \"{trades[node]["name"].upper()}_TC_Trade_Company\" }} \n}}\n')
-        
+        if trades[node]['colonial']:
+            file_cr.write(f'{trades[node]["name"]}_cr = {{\n\tcolor = {{ {color[0]} {color[1]} {color[2]} }} \n\tprovinces={{\n\t\t{" ".join([all_provs[x]["province"] for x in trades[node]["mem"]])}\n\t}} \n\tnames = {{ name = \"{trades[node]["name"].upper()}_CR_Root_Culture_GetName\" }} \n\tnames = {{ name = \"COLONIAL_REGION_New_Root_GetName\" }} \n}}\n')
+        else:
+            file_tc.write(f'{trades[node]["name"]}_tc = {{\n\tcolor = {{ {color[0]} {color[1]} {color[2]} }} \n\tprovinces={{\n\t\t{" ".join([all_provs[x]["province"] for x in trades[node]["mem"]])}\n\t}} \n\tnames = {{ name = \"{trades[node]["name"].upper()}_TC_Root_Culture_GetName\" }} \n\tnames = {{ name = \"{trades[node]["name"].upper()}_TC_Trade_Company\" }} \n}}\n')
         
         trades[node]['printed'] = True
         with open(loc, 'a', encoding='utf-8-sig') as file_loc:
             file_loc.write(yml_name(trades[node]['name'], f_name(trades[node]['name']), "trade"))
-            file_loc.write(yml_name(f"{trades[node]['name']}_tc", f"{f_name(trades[node]['name'])} Charter", "trade"))
-            file_loc.write(yml_name(f"{trades[node]['name'].upper()}_TC_Root_Culture_GetName", f"[Root.GetAdjective] {f_name(trades[node]['name'])} Trade Company", "trade"))
-            file_loc.write(yml_name(f"{trades[node]['name'].upper()}_TC_Trade_Company", f"{f_name(trades[node]['name'])} Trade Company", "trade"))
+            if trades[node]['colonial']:
+                file_loc.write(yml_name(f"{trades[node]['name']}_cr", f"Colonial {f_name(trades[node]['name'])}", "trade"))
+                file_loc.write(yml_name(f"{trades[node]['name'].upper()}_CR_Root_Culture_GetName", f"[Root.GetAdjective] {f_name(trades[node]['name'])}", "trade"))
+            else:
+                file_loc.write(yml_name(f"{trades[node]['name']}_tc", f"{f_name(trades[node]['name'])} Charter", "trade"))
+                file_loc.write(yml_name(f"{trades[node]['name'].upper()}_TC_Root_Culture_GetName", f"[Root.GetAdjective] {f_name(trades[node]['name'])} Trade Company", "trade"))
+                file_loc.write(yml_name(f"{trades[node]['name'].upper()}_TC_Trade_Company", f"{f_name(trades[node]['name'])} Trade Company", "trade"))
 
 def connect(input_cc, g: nx.DiGraph, provs):
     sorted_cc = sorted(input_cc, key=len)
@@ -237,7 +255,7 @@ def connets(g: nx.DiGraph, provs: dict, limit_dist: int, limit_size: int):
 
     return g
 
-def print_trades(file_tc, file_tn, trades, ars, all_provs, path, limit_dist, limit_size, loc, real_all):
+def print_trades(file_tc, file_tn, file_cr, trades, ars, all_provs, path, limit_dist, limit_size, loc, real_all, continents):
     keys = list(trades.keys())
     G = nx.DiGraph()
     for key in keys: 
@@ -255,6 +273,7 @@ def print_trades(file_tc, file_tn, trades, ars, all_provs, path, limit_dist, lim
         trades[key]['loc'] = all_provs[trades[key]['mem'][0]]["province"]
         trades[key]['posts'] = set(random.choices(list(trades[key]['mem']), k=hash(key) % 6 + 2))
         trades[key]['posts'].add(trades[key]['mem'][0])
+        trades[key]['colonial'] = any(col in list(filter(lambda a: trades[key]['mem'][0] in continents[a]['mem'], continents.keys()))[0] for col in ['north_america', 'south_america', 'oceania'])
         trades[key]['printed'] = False
         for post in trades[key]['posts']:
             with open(f"{path}/history/provinces/{all_provs[post]['province']} - {all_provs[post]['name']}.txt", 'a') as prov_file:
@@ -271,7 +290,7 @@ def print_trades(file_tc, file_tn, trades, ars, all_provs, path, limit_dist, lim
                 apg.add_edge(p, adj, weight=2 if 'SEA' in pt and 'SEA' in at else 0.5 if 'PROV' in pt and 'PROV' in at else 3 if ('SEA' in pt and 'PROV' in at) or ('SEA' in at and 'PROV' in pt) else 10000 if 'WASTE' in at or 'WASTE' in pt else 1000)
     
     for node in G:
-        print_trade_node(node, G, trades, apl, file_tn, file_tc, loc, apg)
+        print_trade_node(node, G, trades, apl, file_tn, file_tc, file_cr, loc, apg)
     
 def center(prov_keys, all_provs):
     x = sum([all_provs[i]['xy'][0] for i in prov_keys])//len(prov_keys)
@@ -288,11 +307,11 @@ def sort_closest(prov: dict, all_provs: dict, sorting = None, cyl=False):
 
 def f_name(name: str):
     if "sea_superregion" in name:
-        name = f"{name.split('_')[0].capitalize()} ocean"
+        name = f"{' '.join(name.removesuffix('sea_superregion').split('_')).title()} ocean"
     elif "sea_region" in name:
-        name = f"Sea of {name.split('_')[0].capitalize()}"
+        name = f"Sea of {' '.join(name.removesuffix('sea_region').split('_')).title()}"
     else:
-        name = name.split('_')[0].capitalize()
+        name = ' '.join(name.split('_')[:-1] if '_' in name else [name]).title()
     return name
     
 def yml_name(tag:str, name: str, typ: str = "area"):
@@ -301,7 +320,9 @@ def yml_name(tag:str, name: str, typ: str = "area"):
     else:
         return f" {tag}: \"{name}\"\n {tag}_name: \"{name}\"\n {tag}_adj: \"{name}\"\n"
 
-def gen_areas(provinces: dict, path: str, cultures: dict, religions: dict, techs: list, seed: int = 1, def_conts: dict = {}):
+def gen_areas(provinces: dict, path: str, cultures: dict, religions: dict, techs: list, seed: int = 1, def_conts: dict = {}, width = WIDTH):
+    global WIDTH
+    WIDTH = width
     # random.seed(seed)
     
     areas_loc = f"{path}/localisation/random_map_mod_loc_l_english.yml"
@@ -315,7 +336,7 @@ def gen_areas(provinces: dict, path: str, cultures: dict, religions: dict, techs
     lands, wastes, seas, lakes = split_lwsl(temp)
     ls = lands.copy()
     ls.update(seas)
-    land_areas, sea_areas, all_areas = gg.group_agg_both([lands, seas], 7, 'area', provinces, disp=False, is_sea=True)
+    land_areas, sea_areas, all_areas = gg.group_agg_both([lands, seas], 5, 'area', provinces, disp=False, is_sea=True)
 
     with open(f'{path}/map/area.txt', 'w') as file:
         print_areas(file, land_areas, provinces, areas_loc, "Land areas")
@@ -334,7 +355,7 @@ def gen_areas(provinces: dict, path: str, cultures: dict, religions: dict, techs
     if def_conts == {}:
         continents, _,_ = gg.group_agg_both([land_sr], 4, "continent", all_sr, disp=False, is_sea=False)
     else:
-        continents, _,_ = gg.group_agg_both([land_sr], 4, "continent", all_sr, def_conts=def_conts, def_names=True, disp=False, is_sea=False)
+        continents, _,_ = gg.group_agg_both([land_sr], 4, "continent", all_sr, def_conts=def_conts, def_names=True, disp=False, is_sea=False, sort=True)
     # gg.plot_g(continents)
 
     # adding wastelands to continents begin
@@ -364,7 +385,8 @@ def gen_areas(provinces: dict, path: str, cultures: dict, religions: dict, techs
     trades = gg.group_agg(temp, 9, "trade", temp_all)
     with open(f"{path}/common/tradenodes/00_tradenodes.txt", 'w') as file_tn:
         with open(f"{path}/common/trade_companies/00_trade_companies.txt", 'w') as file_tc:
-            print_trades(file_tc, file_tn, trades, land_areas, lands, path, 500, 3, areas_loc, provinces)
+            with open(f"{path}/common/colonial_regions/00_colonial_regions.txt", 'w') as file_cr:
+                print_trades(file_tc, file_tn, file_cr, trades, land_areas, lands, path, 500, 3, areas_loc, provinces, continents)
 
     return land_areas
     

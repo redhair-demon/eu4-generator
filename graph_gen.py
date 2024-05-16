@@ -2,6 +2,7 @@ import random
 import networkx as nx
 import matplotlib.pyplot as plt
 import yaml
+import copy
 import gen_names as gn
 from sklearn.cluster import KMeans
 from sklearn.cluster import AgglomerativeClustering
@@ -38,7 +39,7 @@ def distance(a, b, cyl=False, width=5632):
     if cyl: return (min(abs(a[1] - b[1]), width - abs(a[1] - b[1])))**2 + (a[0] - b[0])**2
     return np.sqrt((a[0] - b[0])**2 + (a[1] - b[1])**2)
 
-def group_agg_both(subg_dict: list, n, typ, all_provs, disp=False, def_conts=[], def_names=False, is_sea=False):
+def group_agg_both(subg_dict: list, n, typ, all_provs, disp=False, def_conts=[], def_names=False, is_sea=False, sort=False):
     
     print(f"Generating {typ}s...")
     
@@ -50,9 +51,9 @@ def group_agg_both(subg_dict: list, n, typ, all_provs, disp=False, def_conts=[],
             if adj in all_provs:
                 all_subg.add_edge(u, adj, weight=weight(all_provs[u]['type'], all_provs[adj]['type'], is_sea))
     
-    land_groups = group_agg(subg_dict[0], n, typ, all_provs, disp=disp, def_conts=def_conts, def_names=def_names)
+    land_groups = group_agg(subg_dict[0], n, typ, all_provs, disp=disp, def_conts=def_conts, def_names=def_names, sort=sort)
     if is_sea:
-        sea_groups = group_agg(subg_dict[1], n, f"sea_{typ}", all_provs, disp=disp, def_conts=def_conts, def_names=def_names)
+        sea_groups = group_agg(subg_dict[1], n, f"sea_{typ}", all_provs, disp=disp, def_conts=def_conts, def_names=def_names, sort=sort)
     else:
         sea_groups = {}
     
@@ -82,7 +83,56 @@ def group_agg_both(subg_dict: list, n, typ, all_provs, disp=False, def_conts=[],
     print(len(all_groups), len(land_groups), len(sea_groups), len(all_provs))
     return [land_groups, sea_groups, all_groups]
 
-def group_agg(subg_dict: dict, n, typ, all_provs, disp=False, def_conts={}, def_names=False, is_sea=False):
+def sort_closest_g(node, g: nx.Graph, sorting=None):
+    if sorting == None: sorting = g.nodes
+    return sorted(sorting, key=lambda a: nx.shortest_path(g, node, a, weight='weight'))
+
+def connect(input_cc, g: nx.Graph, provs: nx.Graph):
+    sorted_cc = sorted(input_cc, key=len)
+    done = []
+    cc = sorted_cc[0]
+    closest = {'dist': None, 'from': None, 'to': None}
+    for cc2 in filter(lambda b: sorted_cc.index(b)>sorted_cc.index(cc), sorted_cc):
+        if cc2 in done: continue
+        for cc_i in cc:
+            cl = sort_closest_g(cc_i, provs, cc2)
+            cld = nx.shortest_path(provs, cc_i, cl[0], weight='weight')
+            if closest['dist'] == None or (cld < closest['dist']):
+                closest['dist'] = cld
+                closest['from'] = cc_i
+                closest['to'] = cl[0]
+                if (closest['dist'] == 0): print("zerooo")
+    g.add_edge(closest['from'], closest['to'], weight=closest['dist'])
+
+    return g
+
+def connect_old(input_cc, g: nx.Graph, provs, provsg: nx.Graph):
+    sorted_cc = sorted(input_cc, key=len)
+    done = []
+    cc = sorted_cc[0]
+    closest = {'dist': None, 'from': None, 'to': None}
+    for cc2 in filter(lambda b: sorted_cc.index(b)>sorted_cc.index(cc), sorted_cc):
+        if cc2 in done: continue
+        for cc_i in cc:
+            cl = sort_closest(provs[cc_i], provs, cc2, cyl=True)
+            if closest['dist'] == None or (distance(provs[cc_i]['xy'], provs[cl[0]]['xy']) < closest['dist']):
+                closest['dist'] = distance(provs[cc_i]['xy'], provs[cl[0]]['xy'])
+                closest['from'] = cc_i
+                closest['to'] = cl[0]
+                if (closest['dist'] == 0): print("zerooo")
+    g.add_edge(closest['from'], closest['to'], weight=nx.shortest_path_length(provsg, closest['from'], closest['to']))
+
+    return g
+
+def group_agg(subg_dict: dict, n, typ, all_provs, disp=False, def_conts={}, def_names=False, is_sea=False, sort=False):
+    
+    allg = nx.Graph()
+    allg.add_nodes_from([(k, v) for k, v in all_provs.items()])
+    for u in allg:
+        for adj in all_provs[u]['adj']:
+            if adj in allg.nodes:
+                allg.add_edge(u, adj, weight=weight(all_provs[u]['type'], all_provs[adj]['type']))
+    
     subg = nx.Graph()
     subg.add_nodes_from([(k, v) for k, v in subg_dict.items()])
     print(f"Generating {typ}s from {len(subg_dict)} items...")
@@ -92,6 +142,9 @@ def group_agg(subg_dict: dict, n, typ, all_provs, disp=False, def_conts={}, def_
             if adj in subg.nodes:
                 subg.add_edge(u, adj, weight=weight(all_provs[u]['type'], all_provs[adj]['type']))
     
+    while not nx.is_connected(subg):
+        subg = connect_old(nx.connected_components(subg), subg, all_provs, allg)
+
     coords = nx.get_node_attributes(subg, 'xy')
     nodes = subg.nodes
     X = nx.adjacency_matrix(subg)
@@ -120,22 +173,34 @@ def group_agg(subg_dict: dict, n, typ, all_provs, disp=False, def_conts={}, def_
 
     
     groups = {f"{names[i]}_{typ}": {
-        'name': f"{names[i]}_{typ}", 
+        'name': f"{names[i]}" if def_names else f"{names[i]}_{typ}", 
         'xy': center([xy for k, xy in enumerate(coords.values()) if clusters[k]==i]), 
         'in': set([n for ii, n in enumerate(nodes) if clusters[ii]==i]),
         'type': 'SEA' if is_sea else 'PROV',
         'adj': set()
         } for i in range(n_clusters)}
     
-    if def_names:        
-        tdf = groups.copy()
+    if sort:
+        tdf = copy.deepcopy(groups)
+        tg = nx.Graph()
+        tg.add_nodes_from([(k, v) for k, v in tdf.items()])
+        for u in tdf:
+            for v in tdf:
+                if v != u:
+                    u_main = sort_closest(tdf[u], all_provs, tdf[u]['in'])[0]
+                    v_main = sort_closest(tdf[v], all_provs, tdf[v]['in'])[0]
+                    tg.add_edge(u, v, weight=nx.shortest_path_length(allg, u_main, v_main))
+        
         ff = list(tdf.keys())
         tgr = {ff[0]: tdf.pop(ff[0])}
         for i, v in enumerate(ff):
             if i < 1: continue
-            tgr[v] = tdf.pop(sort_closest(groups[ff[i-1]], tdf, cyl=True)[0])
+            ttt = filter(lambda a: a!=ff[i-1] and a in tdf, ff)
+            tttt = sorted(ttt, key=lambda k: tg[ff[i-1]][k]['weight'])
+            tgr[v] = tdf.pop(tttt[0])
+            # tgr[v] = tdf.pop(sort_closest(list(groups[ff[i-1]]['in'])[0], tdf, graph=True)[0])
         for k in tgr:
-            tgr[k]['name'] = k
+            tgr[k]['name'] = groups[k]['name']
         groups = tgr
 
     for g in groups:
@@ -259,8 +324,17 @@ def distance(a, b, cyl=False, WIDTH=5632):
     if cyl: return (min(abs(a[1] - b[1]), WIDTH - abs(a[1] - b[1])))**2 + (a[0] - b[0])**2
     return (a[0] - b[0])**2 + (a[1] - b[1])**2
 
-def sort_closest(prov: dict, all_provs: dict, sorting = None, cyl=False):
+def sort_closest(prov: dict, all_provs: dict, sorting = None, cyl=False, graph=False):
     if sorting == None: sorting = all_provs.keys()
+    if graph:
+        tg = nx.Graph()
+        tg.add_nodes_from([(k, v) for k, v in all_provs.items()])
+        for u in all_provs:
+            for adj in all_provs[u]['adj']:
+                if adj in all_provs:
+                    tg.add_edge(u, adj, weight=weight(all_provs[u], all_provs[adj]))
+        return sorted(sorting, key=lambda p: nx.shortest_path_length(tg, list(prov.keys())[0], p) )
+        
     return sorted(sorting, key=lambda p: distance(prov['xy'], all_provs[p]['xy'], cyl=cyl) )# (prov['xy'][0] - all_provs[p]['xy'][0])**2 + (prov['xy'][1] - all_provs[p]['xy'][1])**2)
 
 def plot_g(g):

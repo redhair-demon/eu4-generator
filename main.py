@@ -5,13 +5,10 @@ import region_gen as rg
 from PIL import Image
 import os
 import yaml
+from shutil import copytree
 
 mod = """name="{}"
 replace_path="history/provinces"
-replace_path="history/diplomacy"
-replace_path="history/wars"
-replace_path="history/countries"
-#replace_path="missions"
 replace_path="common/bookmarks"
 replace_path="common/province_names"
 tags={{
@@ -125,6 +122,15 @@ def gen_adj(path):
     neighbors = find_neighbors(image_path, provinces)
     write_neighbors(f'{path}/adj.txt', neighbors)
 
+def write_positions(provinces, path, size):
+    offset = [[0, 0], [8, 2], [4, 4], [-2, -2], [10, 10], [0, 0], [0, 0]]
+    # offset = [[0, 0] for i in range(7)]
+    with open(path, 'w') as file:
+        for prov in provinces.values():
+            position = " ".join([f"{prov['xy'][0]+s[0]:.3f} {abs((prov['xy'][1]+s[1])-size[1]):.3f}" for s in offset[:-1]] + ["0.000 0.000"])
+            rot = " ".join(["0.000" for i in range(7)])
+            height = " ".join([f"{s:.3f}" for s in [0, 0, 1, 0, 0, 0, 0]])
+            file.write(f"{prov['province']}={{\n\tposition={{\n\t\t {position} \n\t}}\n\trotation={{\n\t\t {rot} \n\t}}\n\theight={{\n\t\t {height} \n\t}}\n}}\n")
 
 if __name__ == '__main__':
     print("Press Enter to start generation")
@@ -137,11 +143,13 @@ if __name__ == '__main__':
     mod_name = config['mod_name']
 
     path = f"{path_mod}/{mod_name}"
-
+    size = Image.open(f'{path}/map/provinces.bmp').size
+    print(size)
     if not os.path.exists(f"{path}/adj.txt"):
         gen_adj(path)
     neighbors = read_neighbors(f"{path}/adj.txt")
 
+    write_positions(neighbors, f"{path_mod}/{mod_name}/map/positions.txt", size)
     
     pp = f"{path}/history/provinces"
     if os.path.exists(pp):
@@ -169,33 +177,57 @@ if __name__ == '__main__':
             country_file.write(f"technology_group = {t}\ngovernment = republic\nreligion = orthodox\nprimary_culture = russian\ncapital = {i+1}")
         with open(f"{path}/common/countries/{t}_country.txt", 'w') as country_file:
             country_file.write(f"""graphical_culture = westerngfx
-    random_nation_chance = 0
-    color = {{ {random.randint(0, 255)} {random.randint(0, 255)} {random.randint(0, 255)} }}
-    historical_idea_groups = {{	
-        administrative_ideas
-        quantity_ideas
-        defensive_ideas	
-        humanist_ideas
-        trade_ideas
-        quality_ideas
-        economic_ideas	
-        maritime_ideas
-    }}
-    monarch_names = {{
-        \"Olga #0\"
-    }}
-    leader_names = {{
-        Tropik Tropinin
-    }}""")
+random_nation_chance = 0
+color = {{ {random.randint(0, 255)} {random.randint(0, 255)} {random.randint(0, 255)} }}
+historical_idea_groups = {{	
+    administrative_ideas
+    quantity_ideas
+    defensive_ideas	
+    humanist_ideas
+    trade_ideas
+    quality_ideas
+    economic_ideas	
+    maritime_ideas
+}}
+monarch_names = {{
+    \"Olga #0\"
+}}
+leader_names = {{
+    Tropik Tropinin
+}}""")
+    
     with open(f"{path}/common/country_tags/01_countries.txt", 'w') as country_file:
         for i, t in enumerate(sorted(list(techs['groups']))):
             country_file.write(f"R{i:02d} = \"countries/{t}_country.txt\"\n")
     # for n in list(neighbors.keys())[:2]:
     #     print(n, neighbors[n])
-    areas = rg.gen_areas(neighbors, path, cultures, religions, sorted(list(techs['groups'])), 42, def_conts=default_conts)
+    coal = [27/827, 17/1133, 1/438, 7/535, 2/249, 3/90]
+    for i, k in enumerate(default_conts.keys()):
+        default_conts[k]['coal'] = coal[i]
+    areas = rg.gen_areas(neighbors, path, cultures, religions, sorted(list(techs['groups'])), 42, def_conts=default_conts, width=size[0])
 
     with open(f"{path_mod}/{mod_name}.mod", 'w') as mod_file:
         mod_file.write(mod.format(mod_name, mod_name))
+    with open(f"{path_mod}/{mod_name}/descriptor.mod", 'w') as mod_file:
+        mod_file.write(mod.format(mod_name, mod_name))
+
+    # map files
+    for file_path in ['map/area.txt', 'map/region.txt', 'map/superregion.txt']:
+        with open(f"{path_mod}/{mod_name}/{file_path}", 'a') as mod_file:
+            mod_file.write("\n".join([f"{x} = {{}}" for x in sorted(list(read_dict(f"{game_folder}/{file_path}", [], []).keys()))]))
+    # colonial regions and trade companies
+    for file_path in ['common/colonial_regions/00_colonial_regions.txt', 'common/trade_companies/00_trade_companies.txt']:
+        with open(f"{path_mod}/{mod_name}/{file_path}", 'a') as mod_file:
+            mod_file.write("\n# default items\n")
+            mod_file.write("\n".join([f"{x} = {{provinces={{0}}}}" for i, x in enumerate(sorted(list(read_dict(f"{game_folder}/{file_path}", [], []).keys())))]))
+    # tradenodes
+    for file_path in ['common/tradenodes/00_tradenodes.txt']:
+        with open(f"{path_mod}/{mod_name}/{file_path}", 'a') as mod_file:
+            max_provs = len(neighbors)+1
+            mod_file.write("\n# default items\n")
+            mod_file.write("\n".join([f"{x} = {{location={max_provs}\tmembers={{{max_provs}}}}}" for i, x in enumerate(sorted(list(read_dict(f"{game_folder}/{file_path}", [], []).keys())))]))
+
+    copytree('mod_files', f"{path_mod}/{mod_name}", dirs_exist_ok=True)
 
     print("Done")
     print("Press Enter key to exit.")

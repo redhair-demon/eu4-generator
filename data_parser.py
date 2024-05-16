@@ -142,7 +142,7 @@ if __name__ == "__main__":
     continents = read_dict_conts(f"{game_folder}/map/continent.txt", prim_pop=['island_check_provinces', 'new_world'])
     print([{x: len(continents[x]['mem'])} for x in continents])
     provs = create_files_from_csv(f"{game_folder}/map/definition.csv")
-    provs.update(read_all_prov_files(f"{game_folder}/history/provinces", ['culture', 'religion', 'owner']))
+    provs.update(read_all_prov_files(f"{game_folder}/history/provinces", ['culture', 'religion', 'owner', 'base_tax', 'base_production', 'base_manpower']))
 
     for k, v in provs.items():
         provs[k]['xy'] = pos[int(k)]['xy']
@@ -159,12 +159,15 @@ if __name__ == "__main__":
         for p in continents[c]['mem']:
             add_to_dict(continents, c, provs, p, cultures, cultures, 'culture')
             add_to_dict(continents, c, provs, p, religions, cultures, 'religion')
+            for base in ['base_tax', 'base_production', 'base_manpower']:
+                add_to_dict(continents, c, provs, p, {str(i): i for i in range(1, 50)}, cultures, base)
             add_to_dict_from_owner(continents, c, provs, p, countries, cultures, 'technology_group', 'owner')
             # add_to_dict_from_owner(continents, c, provs, p, countries, 'owner', 'technology_group')
 
-    # yaml.dump(continents, open('default_data.yml', 'w'), sort_keys=False)
+    # yaml.dump(continents, open('default_data_2.yml', 'w'), sort_keys=False)
+    # write_data(continents)
 
-def write_data(continents):
+# def write_data(continents):
     with open('default_data.yml', 'w') as file:
         for c in continents:
             continents[c].pop('mem')
