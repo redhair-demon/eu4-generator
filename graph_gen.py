@@ -150,27 +150,24 @@ def group_agg(subg_dict: dict, n, typ, all_provs, disp=False, def_conts={}, def_
     X = nx.adjacency_matrix(subg)
 
     if len(subg_dict) < 2:
-        if len(def_conts) == 0:
-            names = gn.generate_names(1)
-        else:
-            names = random.sample(list(def_conts.keys()), counts=list(def_conts.values()), k=1)     
         clusters = [0]
         n_clusters = 1       
     else:
         # print(X)
         if len(def_conts) == 0:
-            # print(X)
-            names = gn.generate_names(len(coords)//n)
             model = AgglomerativeClustering(n_clusters=len(subg)//n, linkage='ward', connectivity=X).fit(list(coords.values()))    
         else:
             if len(subg_dict) < len(def_conts):
                 def_conts = {k: def_conts[k] for k in random.choices(list(def_conts.keys()), weights=list(def_conts.values()),k=len(subg_dict))}
-            names = list(def_conts.keys()) if def_names else gn.generate_names(len(def_conts))
             model = AgglomerativeClustering(n_clusters=len(def_conts), linkage='ward', connectivity=X).fit(list(coords.values()))
 
         clusters = model.labels_
         n_clusters = model.n_clusters_
 
+    if len(def_conts) == 0 or not def_names:
+        names = gn.generate_names(n_clusters)
+    else:
+        names = list(def_conts.keys())
     
     groups = {f"{names[i]}_{typ}": {
         'name': f"{names[i]}" if def_names else f"{names[i]}_{typ}", 
@@ -238,37 +235,29 @@ def group_agg_w(subg_dict: dict, n, typ, all_provs, disp=False, def_conts={}, de
     X = nx.adjacency_matrix(subg)
 
     if len(subg_dict) < 2:
-        if len(def_conts) == 0:
-            names = gn.generate_names(1)
-        else:
-            names = random.sample(list(def_conts.keys()), counts=list(def_conts.values()), k=1)     
         clusters = [0]
         n_clusters = 1       
     else:
         import graph_gen_weight as ggs
         if len(weights) > 0:
-            if len(def_conts) == 0:
-                names = gn.generate_names(len(coords)//n)
-            else:
-                # if len(subg_dict) < len(def_conts):
-                #     def_conts = {k: def_conts[k] for k in random.choices(list(def_conts.keys()), weights=list(def_conts.values()),k=len(subg_dict))}
-                names = list(def_conts.keys()) if def_names else gn.generate_names(len(def_conts))
             model = AgglomerativeClustering(n_clusters=min(sum(weights), len(subg)), linkage='ward', connectivity=X).fit(list(coords.values()))
             clusters = ggs.group_weight(model, coords, nodes, weights)
             n_clusters = len(weights)
             
         else:
             if len(def_conts) == 0:
-                names = gn.generate_names(len(coords)//n)
                 model = AgglomerativeClustering(n_clusters=len(subg)//n, linkage='ward', connectivity=X).fit(list(coords.values()))
             else:
                 if len(subg_dict) < len(def_conts):
                     def_conts = {k: def_conts[k] for k in random.choices(list(def_conts.keys()), weights=list(def_conts.values()),k=len(subg_dict))}
-                names = list(def_conts.keys()) if def_names else gn.generate_names(len(def_conts))
                 model = AgglomerativeClustering(n_clusters=len(def_conts), linkage='ward', connectivity=X).fit(list(coords.values()))
             clusters = model.labels_
             n_clusters = model.n_clusters_
 
+    if len(def_conts) == 0 or not def_names:
+        names = gn.generate_names(n_clusters)
+    else:
+        names = list(def_conts.keys())
     
     groups = {f"{names[i]}_{typ}": {
         'name': f"{names[i]}_{typ}", 
