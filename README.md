@@ -41,6 +41,7 @@ Used to distribute technologies on map.
   - `defines/00_randommap_defines.lua` - Some re-defined constants.
   - `institutions/00_Core.txt` - Edited institutions for correct working with random map.
   - `trade_companies/00_trade_companies.txt` - List of all trade companies.
+
   - `tradenodes/00_tradenodes.txt` - List of all trade nodes (connected with some way).
 - `history/`
   - `countries/R{id} - {technology}` - Similarly to `common/countries`.
