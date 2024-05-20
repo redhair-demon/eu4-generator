@@ -145,16 +145,18 @@ def write_defines(defines: dict, path):
             for value in v:
                 file.write(f"NDefines.{k}.{value}\n")
 
-def write_tech_countries(i, tech, path):
-    with open(f"{path}/history/countries/R{i:02d} - {tech}_country.txt", 'w') as country_file:
-        country_file.write(f"technology_group = {tech}\ngovernment = republic\nreligion = orthodox\nprimary_culture = russian\ncapital = {i+1}")
-    with open(f"{path}/common/countries/{tech}_country.txt", 'w') as country_file:
-        country_file.write(country_desc.format(random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)))
+def write_tech_countries(techs, path):
+    for i, tech in enumerate(sorted(list(techs))):
+        with open(f"{path}/history/countries/R{i:02d} - {tech}_country.txt", 'w') as country_file:
+            country_file.write(f"technology_group = {tech}\ngovernment = republic\nreligion = orthodox\nprimary_culture = russian\ncapital = {i+1}")
+        with open(f"{path}/common/countries/{tech}_country.txt", 'w') as country_file:
+            country_file.write(country_desc.format(random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)))
     with open(f"{path}/common/country_tags/01_countries.txt", 'w') as country_file:
-        country_file.write(f"R{i:02d} = \"countries/{tech}_country.txt\"\n")
+        for i, tech in enumerate(sorted(list(techs))):
+            country_file.write(f"R{i:02d} = \"countries/{tech}_country.txt\"\n")
 
 
-if __name__ == '__main__':
+def main():
     print("Press Enter to start generation")
     input()
     print("Generating...")
@@ -189,8 +191,7 @@ if __name__ == '__main__':
     techs = read_dict(f"{game_folder}/common/technology.txt", ['tables'], [])
 
     # Create temporary countries for technology groups
-    for i, t in enumerate(sorted(list(techs['groups']))):
-        write_tech_countries(i, t, path)
+    write_tech_countries(techs['groups'], path)
     
     # Distribute coal by continents
     coal = [27/827, 17/1133, 1/438, 7/535, 2/249, 3/90]
@@ -225,7 +226,16 @@ if __name__ == '__main__':
             mod_file.write("\n# default items\n")
             mod_file.write("\n".join([f"{x} = {{location={max_provs}\tmembers={{{max_provs}}}}}" for i, x in enumerate(sorted(list(read_dict(f"{game_folder}/{file_path}", [], []).keys())))]))
 
-    print("Done")
-    print("Press Enter key to exit.")
-    input()
 
+if __name__ == '__main__':
+    import traceback
+    try:
+        main()
+    except: 
+        traceback.print_exc()
+        print('\nSomething went wrong.')
+    else:
+        print('Done!')
+    finally:
+        print("Press Enter key to exit.")
+        input()
