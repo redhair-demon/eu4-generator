@@ -336,7 +336,7 @@ def gen_areas(provinces: dict, path: str, cultures: dict, religions: dict, techs
     lands, wastes, seas, lakes = split_lwsl(temp)
     ls = lands.copy()
     ls.update(seas)
-    land_areas, sea_areas, all_areas = gg.group_agg_both([lands, seas], 5, 'area', provinces, disp=False, is_sea=True)
+    land_areas, sea_areas, all_areas, circum = gg.group_agg_both([lands, seas], 5, 'area', provinces, disp=False, is_sea=True)
 
     with open(f'{path}/map/area.txt', 'w') as file:
         print_areas(file, land_areas, provinces, areas_loc, "Land areas")
@@ -388,7 +388,11 @@ def gen_areas(provinces: dict, path: str, cultures: dict, religions: dict, techs
             with open(f"{path}/common/colonial_regions/00_colonial_regions.txt", 'w') as file_cr:
                 print_trades(file_tc, file_tn, file_cr, trades, land_areas, lands, path, 500, 3, areas_loc, provinces, continents)
 
-    return land_areas
+    defines = {}
+    defines['NNationDesigner'] = [f"MANDATE_SUBCONTINENT_NAME = \"{random.choice(list(filter(lambda a: 'asia' in land_sr[a]['par'], land_sr.keys())))}\""]
+    defines['NCountry'] = [f"CIRCUMNAVIGATION_PROVINCE_{i+1} = {c}" for i, c in enumerate(random.sample(circum, 6))]
+
+    return defines
     
 
         

@@ -9,32 +9,6 @@ from sklearn.cluster import AgglomerativeClustering
 import numpy as np
 
 
-def group_kmean(subg: dict, n, typ, disp=False, def_conts=[], def_names=False):
-    print(f"Generating {typ}s from {len(subg)} items...")
-
-    X, nodes = [], []
-    for u in subg:
-        nodes.append(u)
-        X.append(subg[u]['xy'])
-    
-    if def_conts == []:
-        names = gn.generate_names(len(X)//n)
-        model = KMeans(n_clusters=len(X)//n, tol=0.1).fit(X)
-        clusters = model.labels_
-    else:
-        names = def_conts # if def_names else gn.generate_names(len(def_conts))
-        model = KMeans(n_clusters=len(def_conts), tol=0.1).fit(X)
-        clusters = model.labels_
-
-    groups = {f"{names[i]}_{typ}": {'name': f"{names[i]}_{typ}", 'xy': x, 'in': set([n for ii, n in enumerate(nodes) if clusters[ii]==i])} for i, x in enumerate(model.cluster_centers_)}
-    for g in groups:
-        for i in groups[g]['in']:
-            subg[i]['par'] = g
-    if disp:
-        plt.scatter([x[0] for x in X], [x[1] for x in X], c=clusters)
-        plot_g(groups)
-    return groups
-
 def distance(a, b, cyl=False, width=5632):
     if cyl: return (min(abs(a[1] - b[1]), width - abs(a[1] - b[1])))**2 + (a[0] - b[0])**2
     return np.sqrt((a[0] - b[0])**2 + (a[1] - b[1])**2)
@@ -79,9 +53,30 @@ def group_agg_both(subg_dict: list, n, typ, all_provs, disp=False, def_conts=[],
     
     if disp:
         plot_g(all_groups)
+    
+    if typ == 'area':
+        print('Computing circumnavigation')
+        point = sort_closest({'xy': [0, 1000]}, subg_dict[1])[0]
+        point2 = sort_closest({'xy': [2500, 1000]}, subg_dict[1])[0]
+        point3 = sort_closest({'xy': [5600, 1000]}, subg_dict[1])[0]
+        point4 = sort_closest({'xy': [3100, 1000]}, subg_dict[1])[0]
+        sea_subg = nx.Graph()
+        sea_subg.add_nodes_from([(k, v) for k, v in subg_dict[1].items()])
+
+        for u in sea_subg:
+            for adj in subg_dict[1][u]['adj']:
+                if adj in subg_dict[1]:
+                    sea_subg.add_edge(u, adj, weight=0.2 if any(['PROV' in all_provs[a]['type'] for a in subg_dict[1][u]['adj']]) else 1)
+        circum1 = nx.shortest_path(sea_subg, point, point2, weight='weight')
+        circum2 = nx.shortest_path(sea_subg, point3, point4, weight='weight')
+        circum3 = nx.shortest_path(sea_subg, point2, point4, weight='weight')
+        circum_full = circum1 + circum2 + circum3
+        nx.draw_networkx(sea_subg.subgraph(circum_full), pos=nx.get_node_attributes(sea_subg, 'xy'), width=3, edge_color=(1, 0, 0))
+        circum_full.sort(key=lambda a: all_provs[a]['xy'][0])
+        circum_full = [all_provs[p]['province'] for p in circum_full]
 
     print(len(all_groups), len(land_groups), len(sea_groups), len(all_provs))
-    return [land_groups, sea_groups, all_groups]
+    return [land_groups, sea_groups, all_groups] if typ!='area' else [land_groups, sea_groups, all_groups, circum_full]
 
 def sort_closest_g(node, g: nx.Graph, sorting=None):
     if sorting == None: sorting = g.nodes
@@ -308,10 +303,6 @@ def center(xy: list):
     x = sum(x[0] for x in xy)//len(xy)
     y = sum(y[1] for y in xy)//len(xy)
     return [x, y]
-
-def distance(a, b, cyl=False, WIDTH=5632):
-    if cyl: return (min(abs(a[1] - b[1]), WIDTH - abs(a[1] - b[1])))**2 + (a[0] - b[0])**2
-    return (a[0] - b[0])**2 + (a[1] - b[1])**2
 
 def sort_closest(prov: dict, all_provs: dict, sorting = None, cyl=False, graph=False):
     if sorting == None: sorting = all_provs.keys()
