@@ -1,0 +1,5 @@
+bookmark = {
+	name = "NEWWORLD_NAME"
+	desc = "A whole new world to plunder!"
+	date = 1444.11.11
+}

@@ -2,18 +2,18 @@ import random
 import networkx as nx
 import matplotlib.pyplot as plt
 import numpy as np
+from scipy.spatial import ConvexHull
 
 def reduce_w(weights, n):
     tw = []
-    for v in weights:
-        for i, v in enumerate(weights):
-            tw.append(round((n-sum(tw))*(v/sum(weights[i:]))))
+    for i, v in enumerate(weights):
+        tw.append(round((n-sum(tw))*(v/sum(weights[i:]))))
     return tw
 
 def group_weight(model, coords, nodes, weights, disp=False):
     clusters = model.labels_
     n_clusters = model.n_clusters_
-    if sum(weights) > n_clusters: weights = reduce_w(weights, n_clusters)
+    if sum(weights) != n_clusters: weights = reduce_w(weights, n_clusters)
     tg_m = {i: {
         'xy': center([xy for k, xy in enumerate(coords.values()) if clusters[k]==i]), 
         'in': set([n for ii, n in enumerate(nodes) if clusters[ii]==i]),
@@ -22,7 +22,12 @@ def group_weight(model, coords, nodes, weights, disp=False):
     group = {i: {'in': set(), 'xy': [-1, -1], 'inc': set()} for i in range(len(weights))}
     for i, v in enumerate(weights):
         if v > 0:
-            ttg_key = random.choice(list(tg.keys()))
+            if len(tg) > 3:
+                ttf = {index: [tg_m[index]['xy'][0], tg_m[index]['xy'][1]] for index in tg}
+                hull = ConvexHull(list(ttf.values()))
+                ttg_key = random.choice([list(ttf.keys())[index] for index in hull.vertices])
+            else:
+                ttg_key = random.choice(list(tg.keys()))
             ttg_val = tg.pop(ttg_key)
             group[i]['in'].update(ttg_val['in'])
             group[i]['xy'] = ttg_val['xy']
@@ -54,7 +59,6 @@ def group_weight(model, coords, nodes, weights, disp=False):
     return labels
 
 def draw_hull(coords: dict, labels):
-    from scipy.spatial import ConvexHull
     x, y = np.array([x[0] for x in coords.values()]), np.array([x[1] for x in coords.values()])
     for corners in [[i for i in filter(lambda a: c == labels[a], range(len(labels)))] for c in set(labels)]:
         if len(corners) > 3:

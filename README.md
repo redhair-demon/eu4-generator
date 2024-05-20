@@ -27,21 +27,21 @@ Was tested with [Haftetavenscrap`s EU4 Random Map Generator](https://forum.parad
 - `provinces.bmp` (currently needs to be default EU4 size: 5632 * 2048)
 - `definition.csv` (list of all provinces from `provinces.bmp` file with **r-g-b** values for each)
 
- If present in mod directory, else from game directory:
-- `common/cultues/00_cultures.txt`
-- `common/religions/00_religions.txt`
-- `common/technology.txt`
-
 ## Generator creates following files in mod directory:
 - `adj.txt` - Service file, includes information about all provinces parced from `provinces.bmp` and `definition.csv`, generates once per map. For next launches on map script would use this file instead of parsing bitmap
 - `map/`
   - `area.txt`, `region.txt`, `superregion.txt`, `continent.txt` -
 Define separation of map for areas, regions, superregions and continents, respectively.
 - `common/`
+  - `bookmarks/a_new_world.txt` - Bookmark for game start (1444.11.11).
+  - `colonial_regions/00_colonial_regions.txt` - Colonial regions list.
   - `countries/{technology}` - Service countries, each country has technology from `common/technology.txt` file.
 Used to distribute technologies on map.
   - `country_tags/01_countries.txt` - Service countries listed.
-  - `trade_companies/00_trade_companies.txt` - List of all trade companies (currently trade companies = trade nodes).
+  - `defines/00_randommap_defines.lua` - Some re-defined constants.
+  - `institutions/00_Core.txt` - Edited institutions for correct working with random map.
+  - `trade_companies/00_trade_companies.txt` - List of all trade companies.
+
   - `tradenodes/00_tradenodes.txt` - List of all trade nodes (connected with some way).
 - `history/`
   - `countries/R{id} - {technology}` - Similarly to `common/countries`.
@@ -51,9 +51,6 @@ Used to distribute technologies on map.
 - `{mod name}.mod` - Mod descriptor.
 
 ## Known issues
-- For reason I don't understand sometimes `{mod name}.mod` file can be not changed, which may lead to some of probles described below
-- For some Custom Nation configs (religion, prime culture and technology group, as I found) EU4 can`t create Generic Missions, nation would be without any missions. So, when you start game, firstly check missions tree, if it is empty - try to choose different place or re-generate files
-- Problems with Institutions - some of them can't spawn, others are already accepted
-- Some decisions also often can`t work (for example, decision [Found Indian Trade Company](https://eu4.paradoxwikis.com/List_of_decision_lists#Indian_Trade_Company:~:text=id-,Found%20Indian%20Trade%20Company,-Our%20interest%20in) is always available and can't disapper, so AI countries every day activate it - this may be related to previous point)
-- There are provinces with natives, that you can colonize, but there are no Colonial Regions (yet, I hope)
-- There are no HRE and other structures that "hard-coded" in EU4 (because it would be pretty hard to add these sctructures in random generation)
+- For reason I don't understand sometimes `{mod name}.mod` file can be not changed, which may lead to some of problems described below
+- Some decisions can't work (often related to hard-coded conditions like `region = some_region` which can't be applied to random map where there are not default regions)
+- For some reason Papal State can spawn everywhere and even have non-chistian religion. But according to game files Reformation is able to start.
