@@ -51,5 +51,5 @@ Used to distribute technologies on map.
 
 ## Known issues
 - For reason I don't understand sometimes `{mod name}.mod` file can be not changed, which may lead to some of problems described below
-- Some decisions can`t work (often related to hard-coded conditions like `region = some_region` which can't be applied to random map where there are not default regions)
+- Some decisions can't work (often related to hard-coded conditions like `region = some_region` which can't be applied to random map where there are not default regions)
 - For some reason Papal State can spawn everywhere and even have non-chistian religion. But according to game files Reformation is able to start.
